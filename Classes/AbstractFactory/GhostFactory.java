@@ -1,17 +1,17 @@
 package AbstractFactory;
 
 public class GhostFactory implements GameElementFactory{
-
     @Override
-    public Ghost createGhost() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createGhost'");
+    public int setInitialX() {
+        return 0;
+    }
+    @Override
+    public int setInitialY() {
+        return 0;
     }
 
     @Override
-    public Item createItem() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createItem'");
+    public String setInitialColor() {
+        return null;
     }
-    
 }
