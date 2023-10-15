@@ -2,10 +2,8 @@ public class Ghost {
     private int x;
     private int y;
     private String direction;
-    private final static Ghost instance = new Ghost();
 
     private Ghost() {
-        System.out.println("Singleton initialized");
     }
 
     private int getX() {
@@ -30,10 +28,5 @@ public class Ghost {
 
     private void setDirection(String direction) {
         this.direction = direction;
-    }
-
-    public static Ghost getInstance() {
-        System.out.println("Returning instance");
-        return instance;
     }
 }
