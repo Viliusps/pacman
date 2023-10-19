@@ -1,6 +1,12 @@
 package Factory;
 
 public class GhostFactory {
+    private Ghost ghost;
+
+    public GhostFactory(Ghost ghost) {
+        this.ghost = ghost;
+    }
+
     public Ghost createGhost(String ghostName)
     {
         if(ghostName == null){

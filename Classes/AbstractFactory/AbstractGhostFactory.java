@@ -1,12 +1,13 @@
 package AbstractFactory;
 
 import Builder.Director;
+import Factory.Ghost;
 
 public interface AbstractGhostFactory {
-    public Director director = new Director();
-    public abstract void createInky();
-    public abstract void createPinky();
-    public abstract void createBlinky();
-    public abstract void createClyde();
+    Director director = new Director();
+    Ghost createInky();
+    Ghost createPinky();
+    Ghost createBlinky();
+    Ghost createClyde();
 
 } 

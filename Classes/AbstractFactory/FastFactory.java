@@ -1,28 +1,34 @@
 package AbstractFactory;
 
+import Builder.BlinkyBuilder;
+import Builder.ClydeBuilder;
+import Builder.InkyBuilder;
+import Builder.PinkyBuilder;
+import Factory.Ghost;
+
 public class FastFactory implements AbstractGhostFactory{
 
     @Override
-    public void createInky() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createInky'");
+    public Ghost createInky() {
+        var builder = new InkyBuilder();
+        return director.constructInky(builder);
     }
 
     @Override
-    public void createPinky() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createPinky'");
+    public Ghost createPinky() {
+        var builder = new PinkyBuilder();
+        return director.constructPinky(builder);
     }
 
     @Override
-    public void createBlinky() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createBlinky'");
+    public Ghost createBlinky() {
+        var builder = new BlinkyBuilder();
+        return director.constructBlinky(builder);
     }
 
     @Override
-    public void createClyde() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'createClyde'");
+    public Ghost createClyde() {
+        var builder = new ClydeBuilder();
+        return director.constructClyde(builder);
     }
 }
