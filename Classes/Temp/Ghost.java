@@ -1,3 +1,4 @@
+package Temp;
 public class Ghost {
     private int x;
     private int y;
