@@ -1,5 +1,7 @@
 package pacman;
 
+import pacman.classes.Ghost;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -12,6 +14,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -29,18 +33,19 @@ public class Model extends JPanel implements ActionListener {
     private final int SCREEN_SIZE = N_BLOCKS * BLOCK_SIZE;
     private final int MAX_GHOSTS = 12;
 
-    private int N_GHOSTS = 6;
+    private int N_GHOSTS = 4;
     private int[] dx, dy;
-    private int[] ghost_x, ghost_y, ghost_dx, ghost_dy, ghostSpeed;
+
+    private List<Ghost> ghosts;
 
     private Image heart, ghost;
     private Image up, down, left, right;
 
-    private Pacman pacman = new Pacman();
+    private Pacman pacman;
 
     private int req_dx, req_dy;
 
-    private final short levelData[] = {
+    private final short[] levelData = {
     	19, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 22,
         17, 16, 16, 16, 16, 24, 16, 16, 16, 16, 16, 16, 16, 16, 20,
         25, 24, 24, 24, 28, 0, 17, 16, 16, 16, 16, 16, 16, 16, 20,
@@ -58,7 +63,7 @@ public class Model extends JPanel implements ActionListener {
         25, 24, 24, 24, 26, 24, 24, 24, 24, 24, 24, 24, 24, 24, 28
     };
 
-    private final int validSpeeds[] = {1, 2, 3, 4, 6, 8};
+    private final int[] validSpeeds = {1, 2, 3, 4, 6, 8};
     private final int maxSpeed = 6;
 
     private int currentSpeed = 3;
@@ -76,7 +81,6 @@ public class Model extends JPanel implements ActionListener {
     
     
     private void loadImages() {
-        System.out.println("Working Directory = " + System.getProperty("user.dir"));
     	down = new ImageIcon("./Working/images/down.gif").getImage();
     	up = new ImageIcon("./Working/images/up.gif").getImage();
     	left = new ImageIcon("./Working/images/left.gif").getImage();
@@ -89,11 +93,8 @@ public class Model extends JPanel implements ActionListener {
 
         screenData = new short[N_BLOCKS * N_BLOCKS];
         d = new Dimension(400, 400);
-        ghost_x = new int[MAX_GHOSTS];
-        ghost_dx = new int[MAX_GHOSTS];
-        ghost_y = new int[MAX_GHOSTS];
-        ghost_dy = new int[MAX_GHOSTS];
-        ghostSpeed = new int[MAX_GHOSTS];
+        ghosts = new ArrayList<>();
+        pacman = new Pacman();
         dx = new int[4];
         dy = new int[4];
         
@@ -176,35 +177,35 @@ public class Model extends JPanel implements ActionListener {
     }
 
     private void moveGhosts(Graphics2D g2d) {
-
         int pos;
         int count;
 
         for (int i = 0; i < N_GHOSTS; i++) {
-            if (ghost_x[i] % BLOCK_SIZE == 0 && ghost_y[i] % BLOCK_SIZE == 0) {
-                pos = ghost_x[i] / BLOCK_SIZE + N_BLOCKS * (int) (ghost_y[i] / BLOCK_SIZE);
+            var ghost = ghosts.get(i);
+            if (ghost.getX() % BLOCK_SIZE == 0 && ghost.getY() % BLOCK_SIZE == 0) {
+                pos = ghost.getX() / BLOCK_SIZE + N_BLOCKS * (ghost.getY() / BLOCK_SIZE);
 
                 count = 0;
 
-                if ((screenData[pos] & 1) == 0 && ghost_dx[i] != 1) {
+                if ((screenData[pos] & 1) == 0 && ghost.getDx() != 1) {
                     dx[count] = -1;
                     dy[count] = 0;
                     count++;
                 }
 
-                if ((screenData[pos] & 2) == 0 && ghost_dy[i] != 1) {
+                if ((screenData[pos] & 2) == 0 && ghost.getDy() != 1) {
                     dx[count] = 0;
                     dy[count] = -1;
                     count++;
                 }
 
-                if ((screenData[pos] & 4) == 0 && ghost_dx[i] != -1) {
+                if ((screenData[pos] & 4) == 0 && ghost.getDx() != -1) {
                     dx[count] = 1;
                     dy[count] = 0;
                     count++;
                 }
 
-                if ((screenData[pos] & 8) == 0 && ghost_dy[i] != -1) {
+                if ((screenData[pos] & 8) == 0 && ghost.getDy() != -1) {
                     dx[count] = 0;
                     dy[count] = 1;
                     count++;
@@ -213,11 +214,11 @@ public class Model extends JPanel implements ActionListener {
                 if (count == 0) {
 
                     if ((screenData[pos] & 15) == 15) {
-                        ghost_dx[i] = 0;
-                        ghost_dy[i] = 0;
+                        ghost.setDx(0);
+                        ghost.setDy(0);
                     } else {
-                        ghost_dx[i] = -ghost_dx[i];
-                        ghost_dy[i] = -ghost_dy[i];
+                        ghost.setDx(-ghost.getDx());
+                        ghost.setDy(-ghost.getDy());
                     }
 
                 } else {
@@ -227,19 +228,19 @@ public class Model extends JPanel implements ActionListener {
                     if (count > 3) {
                         count = 3;
                     }
-
-                    ghost_dx[i] = dx[count];
-                    ghost_dy[i] = dy[count];
+                    ghost.setDx(dx[count]);
+                    ghost.setDy(dy[count]);
                 }
 
             }
 
-            ghost_x[i] = ghost_x[i] + (ghost_dx[i] * ghostSpeed[i]);
-            ghost_y[i] = ghost_y[i] + (ghost_dy[i] * ghostSpeed[i]);
-            drawGhost(g2d, ghost_x[i] + 1, ghost_y[i] + 1);
+            ghost.setX(ghost.getX()+(ghost.getDx()) * ghost.getSpeed());
+            ghost.setY(ghost.getY()+(ghost.getDy()) * ghost.getSpeed());
 
-            if (pacman.getX() > (ghost_x[i] - 12) && pacman.getX() < (ghost_x[i] + 12)
-                    && pacman.getY() > (ghost_y[i] - 12) && pacman.getY() < (ghost_y[i] + 12)
+            drawGhost(g2d, ghost.getX() + 1, ghost.getY() + 1);
+
+            if (pacman.getX() > (ghost.getX() - 12) && pacman.getX() < (ghost.getX() + 12)
+                    && pacman.getY() > (ghost.getY() - 12) && pacman.getY() < (ghost.getY() + 12)
                     && inGame) {
 
                 pacman.setDying(true);
@@ -257,7 +258,7 @@ public class Model extends JPanel implements ActionListener {
         short ch;
 
         if (pacman.getX() % BLOCK_SIZE == 0 && pacman.getY() % BLOCK_SIZE == 0) {
-            pos = pacman.getX() / BLOCK_SIZE + N_BLOCKS * (int) (pacman.getY() / BLOCK_SIZE);
+            pos = pacman.getX() / BLOCK_SIZE + N_BLOCKS * (pacman.getY() / BLOCK_SIZE);
             ch = screenData[pos];
 
             if ((ch & 16) != 0) {
@@ -349,7 +350,7 @@ public class Model extends JPanel implements ActionListener {
         pacman.setLives(3);
         pacman.setScore(0);
         initLevel();
-        N_GHOSTS = 6;
+        N_GHOSTS = 4;
         currentSpeed = 3;
     }
 
@@ -369,11 +370,11 @@ public class Model extends JPanel implements ActionListener {
         int random;
 
         for (int i = 0; i < N_GHOSTS; i++) {
-
-            ghost_y[i] = 4 * BLOCK_SIZE; //start position
-            ghost_x[i] = 4 * BLOCK_SIZE;
-            ghost_dy[i] = 0;
-            ghost_dx[i] = dx;
+            var ghost = new Ghost();
+            ghost.setY(4 * BLOCK_SIZE); //start position
+            ghost.setX(4 * BLOCK_SIZE);
+            ghost.setDy(0);
+            ghost.setDy(dx);
             dx = -dx;
             random = (int) (Math.random() * (currentSpeed + 1));
 
@@ -381,7 +382,8 @@ public class Model extends JPanel implements ActionListener {
                 random = currentSpeed;
             }
 
-            ghostSpeed[i] = validSpeeds[random];
+            ghost.setSpeed(validSpeeds[random]);
+            ghosts.add(ghost);
         }
 
         pacman.setX(7 * BLOCK_SIZE);  //start position
