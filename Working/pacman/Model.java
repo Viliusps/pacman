@@ -273,14 +273,17 @@ public class Model extends JPanel implements ActionListener {
                 }
             }
 
-            // Check for standstill
-            if ((pacman.getDX()== -1 && pacman.getDY() == 0 && (ch & 1) != 0)
-                    || (pacman.getDX() == 1 && pacman.getDY() == 0 && (ch & 4) != 0)
-                    || (pacman.getDX() == 0 && pacman.getDY() == -1 && (ch & 2) != 0)
-                    || (pacman.getDX() == 0 && pacman.getDY() == 1 && (ch & 8) != 0)) {
-                pacman.setDX(0);
-                pacman.setDY(0);
+            if(invoker.isCommandSet()) {
+                if ((invoker.getCommandName().equals("LeftMove") && (ch & 1) != 0)
+                        || (invoker.getCommandName().equals("RightMove") && (ch & 4) != 0)
+                        || (invoker.getCommandName().equals("UpMove") && (ch & 2) != 0)
+                        || (invoker.getCommandName().equals("DownMove") && (ch & 8) != 0)) {
+                    pacman.setDX(0);
+                    pacman.setDY(0);
+                }
             }
+
+
         } 
         pacman.setX(pacman.getX() + pacman.getSpeed() * pacman.getDX());
         pacman.setY(pacman.getY() + pacman.getSpeed() * pacman.getDY());
