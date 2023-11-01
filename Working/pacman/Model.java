@@ -2,6 +2,7 @@ package pacman;
 
 import pacman.classes.AbstractFactory.FastFactory;
 import pacman.classes.AbstractFactory.SlowFactory;
+import pacman.classes.Command.*;
 import pacman.classes.Ghost;
 
 import java.awt.BasicStroke;
@@ -45,7 +46,7 @@ public class Model extends JPanel implements ActionListener {
 
     private Pacman pacman;
 
-    private int req_dx, req_dy;
+    private Invoker invoker = new Invoker();
 
     private final short[] levelData = {
     	19, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 22,
@@ -72,7 +73,6 @@ public class Model extends JPanel implements ActionListener {
     private Timer timer;
 
     public Model() {
-
         loadImages();
         initVariables();
         addKeyListener(new TAdapter());
@@ -264,36 +264,37 @@ public class Model extends JPanel implements ActionListener {
                 pacman.addScore(1);
             }
 
-            if (req_dx != 0 || req_dy != 0) {
-                if (!((req_dx == -1 && req_dy == 0 && (ch & 1) != 0)
-                        || (req_dx == 1 && req_dy == 0 && (ch & 4) != 0)
-                        || (req_dx == 0 && req_dy == -1 && (ch & 2) != 0)
-                        || (req_dx == 0 && req_dy == 1 && (ch & 8) != 0))) {
-                    pacman.setDX(req_dx);
-                    pacman.setDY(req_dy);
+            if (invoker.isCommandSet()) {
+                if(!((invoker.getCommandName().equals("LeftMove") && (ch & 1) != 0)
+                        || (invoker.getCommandName().equals("RightMove") && (ch & 4) != 0)
+                        || (invoker.getCommandName().equals("UpMove") && (ch & 2) != 0)
+                        || (invoker.getCommandName().equals("DownMove") && (ch & 8) != 0))) {
+                    invoker.runCommand(pacman);
                 }
             }
 
-            // Check for standstill
-            if ((pacman.getDX()== -1 && pacman.getDY() == 0 && (ch & 1) != 0)
-                    || (pacman.getDX() == 1 && pacman.getDY() == 0 && (ch & 4) != 0)
-                    || (pacman.getDX() == 0 && pacman.getDY() == -1 && (ch & 2) != 0)
-                    || (pacman.getDX() == 0 && pacman.getDY() == 1 && (ch & 8) != 0)) {
-                pacman.setDX(0);
-                pacman.setDY(0);
+            if(invoker.isCommandSet()) {
+                if ((invoker.getCommandName().equals("LeftMove") && (ch & 1) != 0)
+                        || (invoker.getCommandName().equals("RightMove") && (ch & 4) != 0)
+                        || (invoker.getCommandName().equals("UpMove") && (ch & 2) != 0)
+                        || (invoker.getCommandName().equals("DownMove") && (ch & 8) != 0)) {
+                    pacman.setDX(0);
+                    pacman.setDY(0);
+                }
             }
+
+
         } 
         pacman.setX(pacman.getX() + pacman.getSpeed() * pacman.getDX());
         pacman.setY(pacman.getY() + pacman.getSpeed() * pacman.getDY());
     }
 
     private void drawPacman(Graphics2D g2d) {
-
-        if (req_dx == -1) {
+        if (invoker.isCommandSet() && invoker.getCommandName().equals("LeftMove")) {
         	g2d.drawImage(left, pacman.getX() + 1, pacman.getY() + 1, this);
-        } else if (req_dx == 1) {
+        } else if (invoker.isCommandSet() && invoker.getCommandName().equals("RightMove")) {
         	g2d.drawImage(right, pacman.getX() + 1, pacman.getY() + 1, this);
-        } else if (req_dy == -1) {
+        } else if (invoker.isCommandSet() && invoker.getCommandName().equals("UpMove")) {
         	g2d.drawImage(up, pacman.getX() + 1, pacman.getY() + 1, this);
         } else {
         	g2d.drawImage(down, pacman.getX() + 1, pacman.getY() + 1, this);
@@ -374,8 +375,7 @@ public class Model extends JPanel implements ActionListener {
         pacman.setY(11 * BLOCK_SIZE);
         pacman.setDX(0);//reset direction move
         pacman.setDY(0);
-        req_dx = 0;		// reset direction controls
-        req_dy = 0;
+        invoker = new Invoker();
         pacman.setDying(false);
     }
 
@@ -404,7 +404,6 @@ public class Model extends JPanel implements ActionListener {
 
     //controls
     class TAdapter extends KeyAdapter {
-
         @Override
         public void keyPressed(KeyEvent e) {
 
@@ -412,17 +411,13 @@ public class Model extends JPanel implements ActionListener {
 
             if (inGame) {
                 if (key == KeyEvent.VK_LEFT) {
-                    req_dx = -1;
-                    req_dy = 0;
+                    invoker.setCommand(new LeftMove());
                 } else if (key == KeyEvent.VK_RIGHT) {
-                    req_dx = 1;
-                    req_dy = 0;
+                    invoker.setCommand(new RightMove());
                 } else if (key == KeyEvent.VK_UP) {
-                    req_dx = 0;
-                    req_dy = -1;
+                    invoker.setCommand(new UpMove());
                 } else if (key == KeyEvent.VK_DOWN) {
-                    req_dx = 0;
-                    req_dy = 1;
+                    invoker.setCommand(new DownMove());
                 } else if (key == KeyEvent.VK_ESCAPE && timer.isRunning()) {
                     inGame = false;
                 } 
@@ -440,5 +435,4 @@ public class Model extends JPanel implements ActionListener {
     public void actionPerformed(ActionEvent e) {
         repaint();
     }
-		
-	}
+}
