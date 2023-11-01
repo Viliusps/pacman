@@ -9,15 +9,9 @@ public class AdapterInvincibility implements PowerUpAdapter
 		this.adaptee = adaptee;
 	}
 	
-	public void addPoints( )
-	{
-		
-	}
-	
 	public void apply( )
 	{
 		adaptee.addInvincibility();
-		addPoints();
 	}
 	
 	

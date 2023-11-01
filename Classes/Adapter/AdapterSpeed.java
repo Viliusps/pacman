@@ -7,16 +7,10 @@ public class AdapterSpeed implements PowerUpAdapter
 	public AdapterSpeed(SpeedPowerUp adaptee){
 		this.adaptee = adaptee;
 	}
-
-	public void addPoints( )
-	{
-		
-	}
 	
 	public void apply( )
 	{
 		adaptee.addSpeed();
-		addPoints();
 	}
 	
 }

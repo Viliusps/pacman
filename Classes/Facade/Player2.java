@@ -8,5 +8,9 @@ public class Player2
 {
 	private GameFacade facade;
 	
+	public void play()
+	{
+		this.facade.startGame();
+	}
 	
 }

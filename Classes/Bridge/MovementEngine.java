@@ -1,6 +1,6 @@
 package Bridge;
 
-public class MovementEngine
+public abstract class MovementEngine
 {
-	
+	public abstract void moveGhost();
 }

@@ -12,5 +12,8 @@ public class GameFacade
 	
 	private Pacman pacman;
 	
-	
+	public void startGame()
+	{
+		
+	}
 }

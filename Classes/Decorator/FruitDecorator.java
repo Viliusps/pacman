@@ -1,8 +1,10 @@
 package Decorator;
 
+import java.util.ArrayList;
+
 public abstract class FruitDecorator implements Fruit
 {
-	private Prototype.Fruit decoratedFruit;
+	private ArrayList<Fruit> decoratedFruits;
 	
 	public int getPoints( )
 	{

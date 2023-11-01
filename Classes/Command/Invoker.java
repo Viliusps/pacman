@@ -1,14 +1,22 @@
 package Command;
 
-import java.util.ArrayList;
-
 public class Invoker
 {
-	private ArrayList<ICommand> list = new ArrayList<>();
+	private ICommand command;
 	
 	public void runCommand( )
 	{
-		
+		this.command.execute();
+	}
+
+	public void setCommand(ICommand command)
+	{
+		this.command = command;
+	}
+	
+	public void undo()
+	{
+		this.command.undo();
 	}
 	
 	

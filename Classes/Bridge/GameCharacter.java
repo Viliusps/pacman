@@ -2,7 +2,7 @@ package Bridge;
 
 import java.util.ArrayList;
 
-public class GameCharacter
+public abstract class GameCharacter
 {
 	private ArrayList<MovementEngine> movementEngines = new ArrayList<MovementEngine>(null);
 	

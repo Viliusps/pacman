@@ -6,7 +6,7 @@ public class ClydeAlgorithm extends MoveAlgorithm {
         
     }
     @Override
-    public String behaveDifferently() {
+    public String setAlgorithm() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'behaveDifferently'");
     }
