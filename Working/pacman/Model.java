@@ -1,5 +1,7 @@
 package pacman;
 
+import pacman.classes.AbstractFactory.FastFactory;
+import pacman.classes.AbstractFactory.SlowFactory;
 import pacman.classes.Ghost;
 
 import java.awt.BasicStroke;
@@ -38,7 +40,7 @@ public class Model extends JPanel implements ActionListener {
 
     private List<Ghost> ghosts;
 
-    private Image heart, ghost;
+    private Image heart;
     private Image up, down, left, right;
 
     private Pacman pacman;
@@ -63,7 +65,6 @@ public class Model extends JPanel implements ActionListener {
         25, 24, 24, 24, 26, 24, 24, 24, 24, 24, 24, 24, 24, 24, 28
     };
 
-    private final int[] validSpeeds = {1, 2, 3, 4, 6, 8};
     private final int maxSpeed = 6;
 
     private int currentSpeed = 3;
@@ -85,12 +86,9 @@ public class Model extends JPanel implements ActionListener {
     	up = new ImageIcon("./Working/images/up.gif").getImage();
     	left = new ImageIcon("./Working/images/left.gif").getImage();
     	right = new ImageIcon("./Working/images/right.gif").getImage();
-        ghost = new ImageIcon("./Working/images/ghost.gif").getImage();
         heart = new ImageIcon("./Working/images/heart.png").getImage();
-
     }
-       private void initVariables() {
-
+    private void initVariables() {
         screenData = new short[N_BLOCKS * N_BLOCKS];
         d = new Dimension(400, 400);
         ghosts = new ArrayList<>();
@@ -237,7 +235,7 @@ public class Model extends JPanel implements ActionListener {
             ghost.setX(ghost.getX()+(ghost.getDx()) * ghost.getSpeed());
             ghost.setY(ghost.getY()+(ghost.getDy()) * ghost.getSpeed());
 
-            drawGhost(g2d, ghost.getX() + 1, ghost.getY() + 1);
+            drawGhost(g2d, ghost.getColor(),  ghost.getX() + 1, ghost.getY() + 1);
 
             if (pacman.getX() > (ghost.getX() - 12) && pacman.getX() < (ghost.getX() + 12)
                     && pacman.getY() > (ghost.getY() - 12) && pacman.getY() < (ghost.getY() + 12)
@@ -248,9 +246,9 @@ public class Model extends JPanel implements ActionListener {
         }
     }
 
-    private void drawGhost(Graphics2D g2d, int x, int y) {
-    	g2d.drawImage(ghost, x, y, this);
-        }
+    private void drawGhost(Graphics2D g2d, Image color, int x, int y) {
+    	g2d.drawImage(color, x, y, this);
+    }
 
     private void movePacman() {
 
@@ -346,7 +344,6 @@ public class Model extends JPanel implements ActionListener {
     }
 
     private void initGame() {
-
         pacman.setLives(3);
         pacman.setScore(0);
         initLevel();
@@ -365,26 +362,13 @@ public class Model extends JPanel implements ActionListener {
     }
 
     private void continueLevel() {
+        var fastFactory = new FastFactory();
+        var slowFactory = new SlowFactory();
 
-    	int dx = 1;
-        int random;
-
-        for (int i = 0; i < N_GHOSTS; i++) {
-            var ghost = new Ghost();
-            ghost.setY(4 * BLOCK_SIZE); //start position
-            ghost.setX(4 * BLOCK_SIZE);
-            ghost.setDy(0);
-            ghost.setDy(dx);
-            dx = -dx;
-            random = (int) (Math.random() * (currentSpeed + 1));
-
-            if (random > currentSpeed) {
-                random = currentSpeed;
-            }
-
-            ghost.setSpeed(validSpeeds[random]);
-            ghosts.add(ghost);
-        }
+        ghosts.add(fastFactory.getBlinky());
+        ghosts.add(fastFactory.getClyde());
+        ghosts.add(slowFactory.getInky());
+        ghosts.add(slowFactory.getPinky());
 
         pacman.setX(7 * BLOCK_SIZE);  //start position
         pacman.setY(11 * BLOCK_SIZE);

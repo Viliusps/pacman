@@ -1,11 +1,14 @@
 package pacman.classes;
 
+import java.awt.*;
+
 public class Ghost {
     private int x;
     private int y;
     private int dx;
     private int dy;
     private int speed;
+    private Image color;
 
     public int getX() {
         return this.x;
@@ -27,6 +30,10 @@ public class Ghost {
         return this.speed;
     }
 
+    public Image getColor() {
+        return this.color;
+    }
+
     public void setX(int x) {
         this.x = x;
     }
@@ -45,5 +52,9 @@ public class Ghost {
 
     public void setSpeed(int speed) {
         this.speed = speed;
+    }
+
+    public void setColor(Image color) {
+        this.color = color;
     }
 }
