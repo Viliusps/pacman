@@ -2,6 +2,10 @@ package pacman;
 
 import pacman.classes.AbstractFactory.FastFactory;
 import pacman.classes.AbstractFactory.SlowFactory;
+import pacman.classes.Factory.Fruit;
+import pacman.classes.Factory.ItemFactory;
+import pacman.classes.Factory.Pellet;
+import pacman.classes.Factory.PowerPellet;
 import pacman.classes.Ghost;
 
 import java.awt.BasicStroke;
@@ -43,6 +47,11 @@ public class Model extends JPanel implements ActionListener {
     private Image heart;
     private Image up, down, left, right;
 
+    private ItemFactory itemFactory = new ItemFactory();
+    private PowerPellet powerPellet = (PowerPellet) itemFactory.getItem("PowerPellet");
+    private Fruit fruit = (Fruit) itemFactory.getItem("Fruit");
+    private Pellet pellet = (Pellet) itemFactory.getItem("Pellet");
+
     private Pacman pacman;
 
     private int req_dx, req_dy;
@@ -54,7 +63,7 @@ public class Model extends JPanel implements ActionListener {
         0,  0,  0,  0,  0,  0, 17, 16, 16, 16, 16, 16, 16, 16, 20,
         19, 18, 18, 18, 18, 18, 16, 16, 16, 16, 24, 24, 24, 24, 20,
         17, 16, 16, 16, 16, 16, 16, 16, 16, 20, 0,  0,  0,   0, 21,
-        17, 16, 16, 16, 16, 16, 16, 16, 16, 20, 0,  0,  0,   0, 21,
+        17, 16, 64, 16, 16, 16, 32, 16, 16, 20, 0,  0,  0,   0, 21,
         17, 16, 16, 16, 24, 16, 16, 16, 16, 20, 0,  0,  0,   0, 21,
         17, 16, 16, 20, 0, 17, 16, 16, 16, 16, 18, 18, 18, 18, 20,
         17, 24, 24, 28, 0, 25, 24, 24, 16, 16, 16, 16, 16, 16, 20,
@@ -87,6 +96,7 @@ public class Model extends JPanel implements ActionListener {
     	left = new ImageIcon("./Working/images/left.gif").getImage();
     	right = new ImageIcon("./Working/images/right.gif").getImage();
         heart = new ImageIcon("./Working/images/heart.png").getImage();
+
     }
     private void initVariables() {
         screenData = new short[N_BLOCKS * N_BLOCKS];
@@ -259,10 +269,20 @@ public class Model extends JPanel implements ActionListener {
             pos = pacman.getX() / BLOCK_SIZE + N_BLOCKS * (pacman.getY() / BLOCK_SIZE);
             ch = screenData[pos];
 
-            if ((ch & 16) != 0) {
+            //power pellet eaten
+            if (ch == 32) {
                 screenData[pos] = (short) (ch & 15);
-                pacman.addScore(1);
+                pacman.addScore(powerPellet.getPoints());
             }
+            else if (ch == 64) {
+                screenData[pos] = (short) (ch & 15);
+                pacman.addScore(fruit.getPoints());
+            }
+            else if ((ch & 16) != 0) {
+                screenData[pos] = (short) (ch & 15);
+                pacman.addScore(pellet.getPoints());
+            }
+
 
             if (req_dx != 0 || req_dy != 0) {
                 if (!((req_dx == -1 && req_dy == 0 && (ch & 1) != 0)
@@ -310,34 +330,39 @@ public class Model extends JPanel implements ActionListener {
 
                 g2d.setColor(new Color(0,72,251));
                 g2d.setStroke(new BasicStroke(5));
-                
-                if ((levelData[i] == 0)) { 
-                	g2d.fillRect(x, y, BLOCK_SIZE, BLOCK_SIZE);
-                 }
-
-                if ((screenData[i] & 1) != 0) { 
-                    g2d.drawLine(x, y, x, y + BLOCK_SIZE - 1);
+                if (screenData[i] == 32) {
+                    g2d.drawImage(powerPellet.getImage(), x - 5, y - 5, 30, 30, this);
                 }
-
-                if ((screenData[i] & 2) != 0) { 
-                    g2d.drawLine(x, y, x + BLOCK_SIZE - 1, y);
+                else if (screenData[i] == 64) {
+                    g2d.drawImage(fruit.getImage(), x - 5, y - 5, 35, 35, this);
                 }
+                else{
+                    if ((levelData[i] == 0)) { 
+                        g2d.fillRect(x, y, BLOCK_SIZE, BLOCK_SIZE);
+                    }
 
-                if ((screenData[i] & 4) != 0) { 
-                    g2d.drawLine(x + BLOCK_SIZE - 1, y, x + BLOCK_SIZE - 1,
-                            y + BLOCK_SIZE - 1);
+                    if ((screenData[i] & 1) != 0) { 
+                        g2d.drawLine(x, y, x, y + BLOCK_SIZE - 1);
+                    } 
+
+                    if ((screenData[i] & 2) != 0) { 
+                        g2d.drawLine(x, y, x + BLOCK_SIZE - 1, y);
+                    }
+
+                    if ((screenData[i] & 4) != 0) { 
+                        g2d.drawLine(x + BLOCK_SIZE - 1, y, x + BLOCK_SIZE - 1,
+                                y + BLOCK_SIZE - 1);
+                    }
+
+                    if ((screenData[i] & 8) != 0) { 
+                        g2d.drawLine(x, y + BLOCK_SIZE - 1, x + BLOCK_SIZE - 1,
+                                y + BLOCK_SIZE - 1);
+                    }
+                    if ((screenData[i] & 16) != 0) { 
+                        g2d.setColor(new Color(255,255,255));
+                        g2d.fillOval(x + 10, y + 10, 6, 6);
+                    }
                 }
-
-                if ((screenData[i] & 8) != 0) { 
-                    g2d.drawLine(x, y + BLOCK_SIZE - 1, x + BLOCK_SIZE - 1,
-                            y + BLOCK_SIZE - 1);
-                }
-
-                if ((screenData[i] & 16) != 0) { 
-                    g2d.setColor(new Color(255,255,255));
-                    g2d.fillOval(x + 10, y + 10, 6, 6);
-               }
-
                 i++;
             }
         }

@@ -13,7 +13,7 @@ public class Pacman {
     private int score;
 
     public Pacman() {
-        this.speed = 6;
+        this.speed = 3;
         this.dying = false;
     }
 
