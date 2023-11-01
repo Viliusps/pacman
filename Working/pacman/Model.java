@@ -347,7 +347,7 @@ public class Model extends JPanel implements ActionListener {
         pacman.setLives(3);
         pacman.setScore(0);
         initLevel();
-        N_GHOSTS=4;
+        N_GHOSTS = 4;
         currentSpeed = 3;
     }
 

@@ -3,11 +3,9 @@ package pacman;
 import javax.swing.JFrame;
 
 public class Client extends JFrame{
-
 	public Client() {
 		add(new Model());
 	}
-	
 	
 	public static void main(String[] args) {
 		Client pac = new Client();

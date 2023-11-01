@@ -1,7 +1,3 @@
-/**
- * @(#) FastFactory.java
- */
-
 package pacman.classes.AbstractFactory;
 
 import pacman.classes.Blinky;
@@ -13,27 +9,20 @@ import pacman.classes.Clyde;
 import pacman.classes.Inky;
 import pacman.classes.Pinky;
 
-public class FastFactory extends GhostFactory
-{
-	public Clyde getClyde( )
-	{
+public class FastFactory extends GhostFactory {
+	public Clyde getClyde() {
 		return new ClydeBuilder().startFastClyde();
 	}
 	
-	public Inky getInky( )
-	{
+	public Inky getInky() {
 		return new InkyBuilder().startFastInky();
 	}
 	
-	public Pinky getPinky( )
-	{
+	public Pinky getPinky() {
 		return new PinkyBuilder().startFastPinky();
 	}
 	
-	public Blinky getBlinky( )
-	{
+	public Blinky getBlinky() {
 		return new BlinkyBuilder().startFastBlinky();
 	}
-	
-	
 }
