@@ -16,28 +16,28 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import pacman.classes.Pacman;
+
 public class Model extends JPanel implements ActionListener {
 
 	private Dimension d;
     private final Font smallFont = new Font("Arial", Font.BOLD, 14);
     private boolean inGame = false;
-    private boolean dying = false;
 
     private final int BLOCK_SIZE = 24;
     private final int N_BLOCKS = 15;
     private final int SCREEN_SIZE = N_BLOCKS * BLOCK_SIZE;
     private final int MAX_GHOSTS = 12;
-    private final int PACMAN_SPEED = 6;
 
     private int N_GHOSTS = 6;
-    private int lives, score;
     private int[] dx, dy;
     private int[] ghost_x, ghost_y, ghost_dx, ghost_dy, ghostSpeed;
 
     private Image heart, ghost;
     private Image up, down, left, right;
 
-    private int pacman_x, pacman_y, pacmand_x, pacmand_y;
+    private Pacman pacman = new Pacman();
+
     private int req_dx, req_dy;
 
     private final short levelData[] = {
@@ -103,7 +103,7 @@ public class Model extends JPanel implements ActionListener {
 
     private void playGame(Graphics2D g2d) {
 
-        if (dying) {
+        if (pacman.getDying()) {
 
             death();
 
@@ -126,10 +126,10 @@ public class Model extends JPanel implements ActionListener {
     private void drawScore(Graphics2D g) {
         g.setFont(smallFont);
         g.setColor(new Color(5, 181, 79));
-        String s = "Score: " + score;
+        String s = "Score: " + pacman.getScore();
         g.drawString(s, SCREEN_SIZE / 2 + 96, SCREEN_SIZE + 16);
 
-        for (int i = 0; i < lives; i++) {
+        for (int i = 0; i < pacman.getLives(); i++) {
             g.drawImage(heart, i * 28 + 8, SCREEN_SIZE + 1, this);
         }
     }
@@ -150,7 +150,7 @@ public class Model extends JPanel implements ActionListener {
 
         if (finished) {
 
-            score += 50;
+            pacman.addScore(50);
 
             if (N_GHOSTS < MAX_GHOSTS) {
                 N_GHOSTS++;
@@ -166,9 +166,9 @@ public class Model extends JPanel implements ActionListener {
 
     private void death() {
 
-    	lives--;
+        pacman.setLives(pacman.getLives() - 1);
 
-        if (lives == 0) {
+        if (pacman.getLives() == 0) {
             inGame = false;
         }
 
@@ -238,11 +238,11 @@ public class Model extends JPanel implements ActionListener {
             ghost_y[i] = ghost_y[i] + (ghost_dy[i] * ghostSpeed[i]);
             drawGhost(g2d, ghost_x[i] + 1, ghost_y[i] + 1);
 
-            if (pacman_x > (ghost_x[i] - 12) && pacman_x < (ghost_x[i] + 12)
-                    && pacman_y > (ghost_y[i] - 12) && pacman_y < (ghost_y[i] + 12)
+            if (pacman.getX() > (ghost_x[i] - 12) && pacman.getX() < (ghost_x[i] + 12)
+                    && pacman.getY() > (ghost_y[i] - 12) && pacman.getY() < (ghost_y[i] + 12)
                     && inGame) {
 
-                dying = true;
+                pacman.setDying(true);
             }
         }
     }
@@ -256,13 +256,13 @@ public class Model extends JPanel implements ActionListener {
         int pos;
         short ch;
 
-        if (pacman_x % BLOCK_SIZE == 0 && pacman_y % BLOCK_SIZE == 0) {
-            pos = pacman_x / BLOCK_SIZE + N_BLOCKS * (int) (pacman_y / BLOCK_SIZE);
+        if (pacman.getX() % BLOCK_SIZE == 0 && pacman.getY() % BLOCK_SIZE == 0) {
+            pos = pacman.getX() / BLOCK_SIZE + N_BLOCKS * (int) (pacman.getY() / BLOCK_SIZE);
             ch = screenData[pos];
 
             if ((ch & 16) != 0) {
                 screenData[pos] = (short) (ch & 15);
-                score++;
+                pacman.addScore(1);
             }
 
             if (req_dx != 0 || req_dy != 0) {
@@ -270,34 +270,34 @@ public class Model extends JPanel implements ActionListener {
                         || (req_dx == 1 && req_dy == 0 && (ch & 4) != 0)
                         || (req_dx == 0 && req_dy == -1 && (ch & 2) != 0)
                         || (req_dx == 0 && req_dy == 1 && (ch & 8) != 0))) {
-                    pacmand_x = req_dx;
-                    pacmand_y = req_dy;
+                    pacman.setDX(req_dx);
+                    pacman.setDY(req_dy);
                 }
             }
 
             // Check for standstill
-            if ((pacmand_x == -1 && pacmand_y == 0 && (ch & 1) != 0)
-                    || (pacmand_x == 1 && pacmand_y == 0 && (ch & 4) != 0)
-                    || (pacmand_x == 0 && pacmand_y == -1 && (ch & 2) != 0)
-                    || (pacmand_x == 0 && pacmand_y == 1 && (ch & 8) != 0)) {
-                pacmand_x = 0;
-                pacmand_y = 0;
+            if ((pacman.getDX()== -1 && pacman.getDY() == 0 && (ch & 1) != 0)
+                    || (pacman.getDX() == 1 && pacman.getDY() == 0 && (ch & 4) != 0)
+                    || (pacman.getDX() == 0 && pacman.getDY() == -1 && (ch & 2) != 0)
+                    || (pacman.getDX() == 0 && pacman.getDY() == 1 && (ch & 8) != 0)) {
+                pacman.setDX(0);
+                pacman.setDY(0);
             }
         } 
-        pacman_x = pacman_x + PACMAN_SPEED * pacmand_x;
-        pacman_y = pacman_y + PACMAN_SPEED * pacmand_y;
+        pacman.setX(pacman.getX() + pacman.getSpeed() * pacman.getDX());
+        pacman.setY(pacman.getY() + pacman.getSpeed() * pacman.getDY());
     }
 
     private void drawPacman(Graphics2D g2d) {
 
         if (req_dx == -1) {
-        	g2d.drawImage(left, pacman_x + 1, pacman_y + 1, this);
+        	g2d.drawImage(left, pacman.getX() + 1, pacman.getY() + 1, this);
         } else if (req_dx == 1) {
-        	g2d.drawImage(right, pacman_x + 1, pacman_y + 1, this);
+        	g2d.drawImage(right, pacman.getX() + 1, pacman.getY() + 1, this);
         } else if (req_dy == -1) {
-        	g2d.drawImage(up, pacman_x + 1, pacman_y + 1, this);
+        	g2d.drawImage(up, pacman.getX() + 1, pacman.getY() + 1, this);
         } else {
-        	g2d.drawImage(down, pacman_x + 1, pacman_y + 1, this);
+        	g2d.drawImage(down, pacman.getX() + 1, pacman.getY() + 1, this);
         }
     }
 
@@ -346,8 +346,8 @@ public class Model extends JPanel implements ActionListener {
 
     private void initGame() {
 
-    	lives = 3;
-        score = 0;
+        pacman.setLives(3);
+        pacman.setScore(0);
         initLevel();
         N_GHOSTS = 6;
         currentSpeed = 3;
@@ -384,13 +384,13 @@ public class Model extends JPanel implements ActionListener {
             ghostSpeed[i] = validSpeeds[random];
         }
 
-        pacman_x = 7 * BLOCK_SIZE;  //start position
-        pacman_y = 11 * BLOCK_SIZE;
-        pacmand_x = 0;	//reset direction move
-        pacmand_y = 0;
+        pacman.setX(7 * BLOCK_SIZE);  //start position
+        pacman.setY(11 * BLOCK_SIZE);
+        pacman.setDX(0);//reset direction move
+        pacman.setDY(0);
         req_dx = 0;		// reset direction controls
         req_dy = 0;
-        dying = false;
+        pacman.setDying(false);
     }
 
  
