@@ -58,7 +58,7 @@ public class Model extends JPanel implements ActionListener {
 
     private final short[] levelData = {
     	19, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 22,
-        17, 16, 16, 16, 16, 24, 16, 16, 16, 16, 16, 16, 16, 16, 20,
+        17, 16, 16, 16, 16, 24, 16, 16, 16, 16, 16, 32, 16, 16, 20,
         25, 24, 24, 24, 28, 0, 17, 16, 16, 16, 16, 16, 16, 16, 20,
         0,  0,  0,  0,  0,  0, 17, 16, 16, 16, 16, 16, 16, 16, 20,
         19, 18, 18, 18, 18, 18, 16, 16, 16, 16, 24, 24, 24, 24, 20,
@@ -69,7 +69,7 @@ public class Model extends JPanel implements ActionListener {
         17, 24, 24, 28, 0, 25, 24, 24, 16, 16, 16, 16, 16, 16, 20,
         21, 0,  0,  0,  0,  0,  0,   0, 17, 16, 16, 16, 16, 16, 20,
         17, 18, 18, 22, 0, 19, 18, 18, 16, 16, 16, 16, 16, 16, 20,
-        17, 16, 16, 20, 0, 17, 16, 16, 16, 16, 16, 16, 16, 16, 20,
+        17, 16, 16, 20, 0, 17, 16, 16, 16, 16, 16, 16, 32, 16, 20,
         17, 16, 16, 20, 0, 17, 16, 16, 16, 16, 16, 16, 16, 16, 20,
         25, 24, 24, 24, 26, 24, 24, 24, 24, 24, 24, 24, 24, 24, 28
     };
@@ -269,12 +269,11 @@ public class Model extends JPanel implements ActionListener {
             pos = pacman.getX() / BLOCK_SIZE + N_BLOCKS * (pacman.getY() / BLOCK_SIZE);
             ch = screenData[pos];
 
-            //power pellet eaten
-            if (ch == 32) {
+            if ((ch & 32) != 0) {
                 screenData[pos] = (short) (ch & 15);
                 pacman.addScore(powerPellet.getPoints());
             }
-            else if (ch == 64) {
+            else if ((ch & 64) != 0) {
                 screenData[pos] = (short) (ch & 15);
                 pacman.addScore(fruit.getPoints());
             }
@@ -330,38 +329,37 @@ public class Model extends JPanel implements ActionListener {
 
                 g2d.setColor(new Color(0,72,251));
                 g2d.setStroke(new BasicStroke(5));
-                if (screenData[i] == 32) {
+                if ((levelData[i] == 0)) { 
+                    g2d.fillRect(x, y, BLOCK_SIZE, BLOCK_SIZE);
+                }
+
+                if ((screenData[i] & 1) != 0) { 
+                    g2d.drawLine(x, y, x, y + BLOCK_SIZE - 1);
+                } 
+
+                if ((screenData[i] & 2) != 0) { 
+                    g2d.drawLine(x, y, x + BLOCK_SIZE - 1, y);
+                }
+
+                if ((screenData[i] & 4) != 0) { 
+                    g2d.drawLine(x + BLOCK_SIZE - 1, y, x + BLOCK_SIZE - 1,
+                            y + BLOCK_SIZE - 1);
+                }
+
+                if ((screenData[i] & 8) != 0) { 
+                    g2d.drawLine(x, y + BLOCK_SIZE - 1, x + BLOCK_SIZE - 1,
+                            y + BLOCK_SIZE - 1);
+                }
+
+                if ((screenData[i] & 32) != 0) {
                     g2d.drawImage(powerPellet.getImage(), x - 5, y - 5, 30, 30, this);
                 }
-                else if (screenData[i] == 64) {
+                else if ((screenData[i] & 64) != 0) {
                     g2d.drawImage(fruit.getImage(), x - 5, y - 5, 35, 35, this);
                 }
-                else{
-                    if ((levelData[i] == 0)) { 
-                        g2d.fillRect(x, y, BLOCK_SIZE, BLOCK_SIZE);
-                    }
-
-                    if ((screenData[i] & 1) != 0) { 
-                        g2d.drawLine(x, y, x, y + BLOCK_SIZE - 1);
-                    } 
-
-                    if ((screenData[i] & 2) != 0) { 
-                        g2d.drawLine(x, y, x + BLOCK_SIZE - 1, y);
-                    }
-
-                    if ((screenData[i] & 4) != 0) { 
-                        g2d.drawLine(x + BLOCK_SIZE - 1, y, x + BLOCK_SIZE - 1,
-                                y + BLOCK_SIZE - 1);
-                    }
-
-                    if ((screenData[i] & 8) != 0) { 
-                        g2d.drawLine(x, y + BLOCK_SIZE - 1, x + BLOCK_SIZE - 1,
-                                y + BLOCK_SIZE - 1);
-                    }
-                    if ((screenData[i] & 16) != 0) { 
-                        g2d.setColor(new Color(255,255,255));
-                        g2d.fillOval(x + 10, y + 10, 6, 6);
-                    }
+                else if ((screenData[i] & 16) != 0) { 
+                    g2d.setColor(new Color(255,255,255));
+                    g2d.fillOval(x + 10, y + 10, 6, 6);
                 }
                 i++;
             }
