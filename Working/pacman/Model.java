@@ -2,6 +2,8 @@ package pacman;
 
 import pacman.classes.AbstractFactory.FastFactory;
 import pacman.classes.AbstractFactory.SlowFactory;
+import pacman.classes.Adapter.AdapterInvincibility;
+import pacman.classes.Adapter.AdapterSpeed;
 import pacman.classes.Factory.Fruit;
 import pacman.classes.Factory.ItemFactory;
 import pacman.classes.Factory.Pellet;
@@ -46,12 +48,15 @@ public class Model extends JPanel implements ActionListener {
     private List<Ghost> ghosts;
 
     private Image heart;
-    private Image up, down, left, right;
+    private Image powerUp;
 
     private ItemFactory itemFactory = new ItemFactory();
     private PowerPellet powerPellet = (PowerPellet) itemFactory.getItem("PowerPellet");
     private Fruit fruit = (Fruit) itemFactory.getItem("Fruit");
     private Pellet pellet = (Pellet) itemFactory.getItem("Pellet");
+
+    private AdapterInvincibility invincibilityAdapter = new AdapterInvincibility();
+    private AdapterSpeed speedAdapter = new AdapterSpeed();
 
     private Pacman pacman;
 
@@ -80,22 +85,46 @@ public class Model extends JPanel implements ActionListener {
     private int currentSpeed = 3;
     private short[] screenData;
     private Timer timer;
+    
 
     public Model() {
         loadImages();
         initVariables();
+        changeRandomValue();
         addKeyListener(new TAdapter());
         setFocusable(true);
         initGame();
     }
-    
-    
+
+    private void changeRandomValue() {
+        int delay = 10000;
+
+        Timer valueChangeTimer = new Timer(delay, new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                int[] validIndices = new int[screenData.length];
+                int validCount = 0;
+
+                for (int i = 0; i < screenData.length; i++) {
+                    if (screenData[i] == 16) {
+                        validIndices[validCount] = i;
+                        validCount++;
+                    }
+                }
+
+                if (validCount > 0) {
+                    int randomIndex = validIndices[(int) (Math.random() * validCount)];
+                    screenData[randomIndex] = 128;
+                }
+            }
+        });
+        valueChangeTimer.setRepeats(false);
+        valueChangeTimer.start();
+    }
+
     private void loadImages() {
-    	down = new ImageIcon("./Working/images/down.gif").getImage();
-    	up = new ImageIcon("./Working/images/up.gif").getImage();
-    	left = new ImageIcon("./Working/images/left.gif").getImage();
-    	right = new ImageIcon("./Working/images/right.gif").getImage();
         heart = new ImageIcon("./Working/images/heart.png").getImage();
+        powerUp = new ImageIcon("./Working/images/powerUp.gif").getImage();
 
     }
     private void initVariables() {
@@ -251,7 +280,7 @@ public class Model extends JPanel implements ActionListener {
                     && pacman.getY() > (ghost.getY() - 12) && pacman.getY() < (ghost.getY() + 12)
                     && inGame) {
 
-                pacman.setDying(true);
+                if(!pacman.getInvincible()) pacman.setDying(true);
             }
         }
     }
@@ -276,10 +305,17 @@ public class Model extends JPanel implements ActionListener {
             else if ((ch & 64) != 0) {
                 screenData[pos] = (short) (ch & 15);
                 pacman.addScore(fruit.getPoints());
+                pacman.setPowerUp(invincibilityAdapter);
+                pacman.applyPowerUp();
             }
             else if ((ch & 16) != 0) {
                 screenData[pos] = (short) (ch & 15);
                 pacman.addScore(pellet.getPoints());
+            }
+            else if ((ch & 128) != 0) {
+                screenData[pos] = (short) (ch & 15);
+                pacman.setPowerUp(speedAdapter);
+                pacman.applyPowerUp();
             }
 
 
@@ -310,13 +346,13 @@ public class Model extends JPanel implements ActionListener {
 
     private void drawPacman(Graphics2D g2d) {
         if (invoker.isCommandSet() && invoker.getCommandName().equals("LeftMove")) {
-        	g2d.drawImage(left, pacman.getX() + 1, pacman.getY() + 1, this);
+        	g2d.drawImage(pacman.getLeft(), pacman.getX() + 1, pacman.getY() + 1, this);
         } else if (invoker.isCommandSet() && invoker.getCommandName().equals("RightMove")) {
-        	g2d.drawImage(right, pacman.getX() + 1, pacman.getY() + 1, this);
+        	g2d.drawImage(pacman.getRight(), pacman.getX() + 1, pacman.getY() + 1, this);
         } else if (invoker.isCommandSet() && invoker.getCommandName().equals("UpMove")) {
-        	g2d.drawImage(up, pacman.getX() + 1, pacman.getY() + 1, this);
+        	g2d.drawImage(pacman.getUp(), pacman.getX() + 1, pacman.getY() + 1, this);
         } else {
-        	g2d.drawImage(down, pacman.getX() + 1, pacman.getY() + 1, this);
+        	g2d.drawImage(pacman.getDown(), pacman.getX() + 1, pacman.getY() + 1, this);
         }
     }
 
@@ -361,6 +397,9 @@ public class Model extends JPanel implements ActionListener {
                 else if ((screenData[i] & 16) != 0) { 
                     g2d.setColor(new Color(255,255,255));
                     g2d.fillOval(x + 10, y + 10, 6, 6);
+                }
+                else if ((screenData[i] & 128) != 0) { 
+                    g2d.drawImage(powerUp, x - 5, y - 5, 35, 35, this);
                 }
                 i++;
             }

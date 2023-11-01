@@ -2,6 +2,6 @@ package Adapter;
 
 public interface PowerUpAdapter
 {
-	void apply( );
+	void apply(Pacman pacman);
 	
 }

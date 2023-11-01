@@ -1,20 +1,39 @@
 package pacman.classes;
 
+import java.awt.Image;
+import javax.swing.ImageIcon;
+
+import pacman.classes.Adapter.PowerUpAdapter;
+
 public class Pacman {
     private int x;
     private int y;
     private int dx;
     private int dy;
 
+    private Image up;
+    private Image down;
+    private Image left;
+    private Image right;
+    
     private int speed;
 
     private boolean dying;
     private int lives;
     private int score;
+    private boolean invincible;
+
+    private PowerUpAdapter powerUp;
 
     public Pacman() {
         this.speed = 3;
         this.dying = false;
+        this.powerUp = null;
+        this.invincible = false;
+        this.down = new ImageIcon("./Working/images/down.gif").getImage();
+        this.up = new ImageIcon("./Working/images/up.gif").getImage();
+    	this.left = new ImageIcon("./Working/images/left.gif").getImage();
+    	this.right = new ImageIcon("./Working/images/right.gif").getImage();
     }
 
     public int getX() {
@@ -83,5 +102,36 @@ public class Pacman {
 
     public void addScore(int score){
         this.score += score;
+    }
+    public void setPowerUp(PowerUpAdapter powerUp) {
+        this.powerUp = powerUp;
+    }
+
+    public void applyPowerUp() {
+        if (powerUp != null) {
+            powerUp.apply(this);
+            powerUp = null;
+        }
+    }
+
+    public void setInvincible(){
+        this.invincible = !this.invincible;
+    }
+
+    public boolean getInvincible(){
+        return this.invincible;
+    }
+
+    public Image getUp(){
+        return this.up;
+    }
+    public Image getDown(){
+        return this.down;
+    }
+    public Image getRight(){
+        return this.right;
+    }
+    public Image getLeft(){
+        return this.left;
     }
 }
