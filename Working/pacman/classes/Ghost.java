@@ -1,6 +1,9 @@
 package pacman.classes;
 
+import pacman.classes.Strategy.MoveAlgorithm;
+
 import java.awt.*;
+import java.util.List;
 
 public class Ghost {
     private int x;
@@ -10,6 +13,8 @@ public class Ghost {
     private int speed;
     private Image color;
     private Boolean frightened;
+
+    private MoveAlgorithm strategy;
 
     public int getX() {
         return this.x;
@@ -65,5 +70,16 @@ public class Ghost {
 
     public void setFrightened(Boolean frightened) {
         this.frightened = frightened;
+    }
+
+    public void setStrategy(MoveAlgorithm strategy) { this.strategy = strategy;}
+
+    public void move(Pacman pac, short[] screenData, int blockSize, int nBlocks, List<Ghost> ghosts) {
+        if (this.x % blockSize == 0 && this.y % blockSize == 0) {
+            int pos = this.x / blockSize + nBlocks * (this.y / blockSize);
+            this.strategy.execute(this, pac, screenData, pos, ghosts);
+        }
+        this.x = (this.x + this.dx * this.speed);
+        this.y = (this.y + this.dy * this.speed);
     }
 }

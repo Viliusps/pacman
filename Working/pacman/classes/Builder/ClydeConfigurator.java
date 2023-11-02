@@ -1,6 +1,8 @@
 package pacman.classes.Builder;
 
 import pacman.classes.Clyde;
+import pacman.classes.Strategy.MoveAlgorithm;
+
 import java.awt.*;
 
 public class ClydeConfigurator {
@@ -42,6 +44,11 @@ public class ClydeConfigurator {
 
 	public ClydeConfigurator addFrightened(Boolean frightened) {
 		this.clyde.setFrightened(frightened);
+		return this;
+	}
+
+	public ClydeConfigurator addStrategy(MoveAlgorithm strategy) {
+		this.clyde.setStrategy(strategy);
 		return this;
 	}
 	
