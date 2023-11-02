@@ -4,6 +4,8 @@ import java.awt.Image;
 import javax.swing.ImageIcon;
 
 import pacman.classes.Adapter.PowerUpAdapter;
+import pacman.classes.Observer.GameEvent;
+import pacman.classes.Observer.GameSubject;
 
 public class Pacman {
     private int x;
@@ -133,5 +135,21 @@ public class Pacman {
     }
     public Image getLeft(){
         return this.left;
+    }
+
+    public void eatPellet(GameSubject subject) {
+        subject.notifyObservers(new GameEvent(GameEvent.EventType.PELLET_EATEN));
+    }
+
+    public void eatPowerPellet(GameSubject subject) {
+        subject.notifyObservers(new GameEvent(GameEvent.EventType.POWER_PELLET_EATEN));
+    }
+
+    public void eatFruit(GameSubject subject) {
+        subject.notifyObservers(new GameEvent(GameEvent.EventType.FRUIT_EATEN));
+    }
+
+    public void eatGhost(GameSubject subject) {
+        subject.notifyObservers(new GameEvent(GameEvent.EventType.GHOST_EATEN));
     }
 }
