@@ -5,7 +5,6 @@ import pacman.classes.AbstractFactory.SlowFactory;
 import pacman.classes.Adapter.AdapterInvincibility;
 import pacman.classes.Adapter.AdapterSpeed;
 import pacman.classes.Factory.ItemFactory;
-import pacman.classes.Factory.Pellet;
 import pacman.classes.Factory.PowerPellet;
 import pacman.classes.Command.*;
 import pacman.classes.Decorator.BasicFruit;
@@ -28,13 +27,14 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
+import pacman.classes.Observer.GameEvent;
+import pacman.classes.Observer.GameSubject;
+import pacman.classes.Observer.Scoreboard;
+import pacman.classes.Observer.ScoringSystem;
 import pacman.classes.Pacman;
 
 public class Model extends JPanel implements ActionListener {
@@ -47,7 +47,6 @@ public class Model extends JPanel implements ActionListener {
     private final int BLOCK_SIZE = 24;
     private final int N_BLOCKS = 15;
     private final int SCREEN_SIZE = N_BLOCKS * BLOCK_SIZE;
-    private final int MAX_GHOSTS = 12;
 
     private int N_GHOSTS = 4;
     private int[] dx, dy;
@@ -60,7 +59,6 @@ public class Model extends JPanel implements ActionListener {
     private ItemFactory itemFactory = new ItemFactory();
     private PowerPellet powerPellet = (PowerPellet) itemFactory.getItem("PowerPellet");
     private BasicFruit fruit = (BasicFruit) itemFactory.getItem("Fruit");
-    private Pellet pellet = (Pellet) itemFactory.getItem("Pellet");
 
     private Fruit doublePointsFruit = new DoublePointsDecorator(fruit);
     private Fruit frightenedFruit = new GhostFrightenedDecorator(fruit);
@@ -71,6 +69,10 @@ public class Model extends JPanel implements ActionListener {
     private Pacman pacman;
 
     private Invoker invoker = new Invoker();
+
+    private final GameSubject scoringSystem = new ScoringSystem();
+
+    private final Scoreboard scoreboard = new Scoreboard();
 
     private final short[] levelData = {
     	19, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 18, 22,
@@ -90,9 +92,6 @@ public class Model extends JPanel implements ActionListener {
         25, 24, 24, 24, 26, 24, 24, 24, 24, 24, 24, 24, 24, 24, 28
     };
 
-    private final int maxSpeed = 6;
-
-    private int currentSpeed = 3;
     private short[] screenData;
     private Timer timer;
 
@@ -139,12 +138,8 @@ public class Model extends JPanel implements ActionListener {
     private void initVariables() {
         screenData = new short[N_BLOCKS * N_BLOCKS];
         d = new Dimension(400, 400);
-        ghosts = new ArrayList<>();
-        ghosts.add(fastFactory.getBlinky());
-        ghosts.add(fastFactory.getClyde());
-        ghosts.add(slowFactory.getInky());
-        ghosts.add(slowFactory.getPinky());
         pacman = new Pacman();
+        scoringSystem.addObserver(scoreboard);
         dx = new int[4];
         dy = new int[4];
         
@@ -167,8 +162,8 @@ public class Model extends JPanel implements ActionListener {
     	String start = "Press SPACE to start";
         g2d.setColor(Color.yellow);
         g2d.drawString(start, (SCREEN_SIZE)/4, 150);
-        if (pacman.getScore() != 0) {
-            String score = "Final score: " + pacman.getScore();
+        if (scoreboard.getScore() != 0) {
+            String score = "Final score: " + scoreboard.getScore();
             g2d.setColor(Color.yellow);
             g2d.drawString(score, (SCREEN_SIZE)/4, 170);
         }
@@ -177,7 +172,7 @@ public class Model extends JPanel implements ActionListener {
     private void drawScore(Graphics2D g) {
         g.setFont(smallFont);
         g.setColor(new Color(5, 181, 79));
-        String s = "Score: " + pacman.getScore();
+        String s = "Score: " + scoreboard.getScore();
         g.drawString(s, SCREEN_SIZE / 2 + 96, SCREEN_SIZE + 16);
 
         for (int i = 0; i < pacman.getLives(); i++) {
@@ -185,43 +180,41 @@ public class Model extends JPanel implements ActionListener {
         }
     }
 
-    private void frightenedDurationCounter() {
-        int frightenedDuration = 3;
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+    private Timer frightenedTimer;
 
-        executor.schedule(() -> {
+    private void frightenedDurationCounter() {
+        int delay = 3000;
+
+        if (frightenedTimer != null && frightenedTimer.isRunning()) {
+            frightenedTimer.stop();
+        }
+
+        frightenedTimer = new Timer(delay, e -> {
             for (Ghost ghost : ghosts) {
                 ghost.setFrightened(false);
             }
-            executor.shutdown();
-        }, frightenedDuration, TimeUnit.SECONDS);
+        });
+
+        frightenedTimer.setRepeats(false);
+        frightenedTimer.start();
     }
 
     private void checkMaze() {
 
         int i = 0;
         boolean finished = true;
-
         while (i < N_BLOCKS * N_BLOCKS && finished) {
-
-            if ((screenData[i]) != 0) {
+            if ((screenData[i] & 16) != 0
+                    || (screenData[i] & 32) != 0
+                    || (screenData[i] & 64) != 0
+                    || (screenData[i] & 128) != 0) {
                 finished = false;
             }
-
             i++;
         }
 
         if (finished) {
-
-            pacman.addScore(50);
-
-            if (N_GHOSTS < MAX_GHOSTS) {
-                N_GHOSTS++;
-            }
-
-            if (currentSpeed < maxSpeed) {
-                currentSpeed++;
-            }
+            scoringSystem.notifyObservers(new GameEvent(GameEvent.EventType.GAME_FINISHED));
 
             initLevel();
         }
@@ -235,11 +228,6 @@ public class Model extends JPanel implements ActionListener {
             ghost.setY(96);
         }
         if (pacman.getLives() == 0) {
-            ghosts = new ArrayList<>();
-            ghosts.add(fastFactory.getBlinky());
-            ghosts.add(fastFactory.getClyde());
-            ghosts.add(slowFactory.getInky());
-            ghosts.add(slowFactory.getPinky());
             inGame = false;
         }
 
@@ -317,6 +305,7 @@ public class Model extends JPanel implements ActionListener {
                     && pacman.getY() > (ghost.getY() - 12) && pacman.getY() < (ghost.getY() + 12)
                     && inGame) {
                 if (ghost.getFrightened()) {
+                    pacman.eatGhost(scoringSystem);
                     ghosts.remove(i);
                     N_GHOSTS--;
                 } else if(!pacman.getInvincible()) {
@@ -341,7 +330,7 @@ public class Model extends JPanel implements ActionListener {
 
             if ((ch & 32) != 0) {
                 screenData[pos] = (short) (ch & 15);
-                pacman.addScore(powerPellet.getPoints());
+                pacman.eatPowerPellet(scoringSystem);
                 for (Ghost ghost : ghosts) {
                     ghost.setFrightened(true);
                 }
@@ -349,13 +338,13 @@ public class Model extends JPanel implements ActionListener {
             }
             else if ((ch & 64) != 0) {
                 screenData[pos] = (short) (ch & 15);
-                pacman.addScore(fruit.getPoints());
+                pacman.eatFruit(scoringSystem);
                 pacman.setPowerUp(invincibilityAdapter);
                 pacman.applyPowerUp();
             }
             else if ((ch & 16) != 0) {
                 screenData[pos] = (short) (ch & 15);
-                pacman.addScore(pellet.getPoints());
+                pacman.eatPellet(scoringSystem);
             }
             else if ((ch & 128) != 0) {
                 screenData[pos] = (short) (ch & 15);
@@ -453,14 +442,18 @@ public class Model extends JPanel implements ActionListener {
 
     private void initGame() {
         pacman.setLives(3);
-        pacman.setScore(0);
+        scoringSystem.notifyObservers(new GameEvent(GameEvent.EventType.RESET));
         initLevel();
         N_GHOSTS = 4;
-        currentSpeed = 3;
     }
 
     private void initLevel() {
-
+        ghosts = new ArrayList<>();
+        ghosts.add(fastFactory.getBlinky());
+        ghosts.add(fastFactory.getClyde());
+        ghosts.add(slowFactory.getInky());
+        ghosts.add(slowFactory.getPinky());
+        N_GHOSTS = 4;
         int i;
         for (i = 0; i < N_BLOCKS * N_BLOCKS; i++) {
             screenData[i] = levelData[i];
