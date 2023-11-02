@@ -22,7 +22,6 @@ public class Pacman {
 
     private boolean dying;
     private int lives;
-    private int score;
     private boolean invincible;
 
     private PowerUpAdapter powerUp;
@@ -94,17 +93,6 @@ public class Pacman {
         this.lives = lives;
     }
 
-    public int getScore(){
-        return this.score;
-    }
-
-    public void setScore(int score) {
-        this.score = score;
-    }
-
-    public void addScore(int score){
-        this.score += score;
-    }
     public void setPowerUp(PowerUpAdapter powerUp) {
         this.powerUp = powerUp;
     }

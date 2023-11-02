@@ -54,7 +54,6 @@ public class Model extends JPanel implements ActionListener {
     private boolean inGame = false;
 
     private int N_GHOSTS = 4;
-    private int[] dx, dy;
 
     private List<Ghost> ghosts;
 
@@ -123,8 +122,6 @@ public class Model extends JPanel implements ActionListener {
         d = new Dimension(400, 400);
         pacman = new Pacman();
         scoringSystem.addObserver(scoreboard);
-        dx = new int[4];
-        dy = new int[4];
         
         timer = new Timer(40, this);
         timer.start();
@@ -218,8 +215,6 @@ public class Model extends JPanel implements ActionListener {
     }
 
     private void moveGhosts(Graphics2D g2d) {
-        int pos;
-        int count;
 
         for (int i = 0; i < N_GHOSTS; i++) {
             var ghost = ghosts.get(i);
@@ -464,7 +459,7 @@ public class Model extends JPanel implements ActionListener {
                 }
             }
         }
-}
+    }
 
 	
     @Override
