@@ -223,60 +223,7 @@ public class Model extends JPanel implements ActionListener {
 
         for (int i = 0; i < N_GHOSTS; i++) {
             var ghost = ghosts.get(i);
-            if (ghost.getX() % BLOCK_SIZE == 0 && ghost.getY() % BLOCK_SIZE == 0) {
-                pos = ghost.getX() / BLOCK_SIZE + N_BLOCKS * (ghost.getY() / BLOCK_SIZE);
-
-                count = 0;
-
-                if ((screenData[pos] & 1) == 0 && ghost.getDx() != 1) {
-                    dx[count] = -1;
-                    dy[count] = 0;
-                    count++;
-                }
-
-                if ((screenData[pos] & 2) == 0 && ghost.getDy() != 1) {
-                    dx[count] = 0;
-                    dy[count] = -1;
-                    count++;
-                }
-
-                if ((screenData[pos] & 4) == 0 && ghost.getDx() != -1) {
-                    dx[count] = 1;
-                    dy[count] = 0;
-                    count++;
-                }
-
-                if ((screenData[pos] & 8) == 0 && ghost.getDy() != -1) {
-                    dx[count] = 0;
-                    dy[count] = 1;
-                    count++;
-                }
-
-                if (count == 0) {
-
-                    if ((screenData[pos] & 15) == 15) {
-                        ghost.setDx(0);
-                        ghost.setDy(0);
-                    } else {
-                        ghost.setDx(-ghost.getDx());
-                        ghost.setDy(-ghost.getDy());
-                    }
-
-                } else {
-
-                    count = (int) (Math.random() * count);
-
-                    if (count > 3) {
-                        count = 3;
-                    }
-                    ghost.setDx(dx[count]);
-                    ghost.setDy(dy[count]);
-                }
-
-            }
-
-            ghost.setX(ghost.getX()+(ghost.getDx()) * ghost.getSpeed());
-            ghost.setY(ghost.getY()+(ghost.getDy()) * ghost.getSpeed());
+            ghost.move(pacman, screenData, BLOCK_SIZE, N_BLOCKS, ghosts);
 
             if (ghost.getFrightened()) {
                 drawGhost(g2d, frightened,  ghost.getX() + 1, ghost.getY() + 1);

@@ -1,6 +1,8 @@
 package pacman.classes.Builder;
 
 import pacman.classes.Inky;
+import pacman.classes.Strategy.MoveAlgorithm;
+
 import java.awt.*;
 
 public class InkyConfigurator {
@@ -42,6 +44,11 @@ public class InkyConfigurator {
 
 	public InkyConfigurator addFrightened(Boolean frightened) {
 		this.inky.setFrightened(frightened);
+		return this;
+	}
+
+	public InkyConfigurator addStrategy(MoveAlgorithm strategy) {
+		this.inky.setStrategy(strategy);
 		return this;
 	}
 	

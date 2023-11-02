@@ -1,6 +1,8 @@
 package pacman.classes.Builder;
 
 import pacman.classes.Blinky;
+import pacman.classes.Strategy.MoveAlgorithm;
+
 import java.awt.*;
 
 public class BlinkyConfigurator {
@@ -42,6 +44,11 @@ public class BlinkyConfigurator {
 
 	public BlinkyConfigurator addFrightened(Boolean frightened) {
 		this.blinky.setFrightened(frightened);
+		return this;
+	}
+
+	public BlinkyConfigurator addStrategy(MoveAlgorithm strategy) {
+		this.blinky.setStrategy(strategy);
 		return this;
 	}
 	
