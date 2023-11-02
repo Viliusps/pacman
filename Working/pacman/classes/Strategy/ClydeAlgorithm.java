@@ -18,30 +18,34 @@ public class ClydeAlgorithm extends MoveAlgorithm {
         int distanceX = targetX - ghost.getX();
         int distanceY = targetY - ghost.getY();
 
+        boolean activated = false;
+
         int minimumDistance = Math.min(Math.abs(distanceX), Math.abs(distanceY));
         if(minimumDistance > 8 * 24) {
             if (Math.abs(distanceX) > Math.abs(distanceY)) {
                 if (distanceX < 0 && (screenData[pos] & 1) == 0 && ghost.getDx() != 1) {
                     ghost.setDx(-1);
                     ghost.setDy(0);
+                    activated = true;
                 } else if (distanceX > 0 && (screenData[pos] & 4) == 0 && ghost.getDx() != -1) {
                     ghost.setDx(1);
                     ghost.setDy(0);
-
+                    activated = true;
                 }
             } else if (Math.abs(distanceX) < Math.abs(distanceY)) {
                 if (distanceY < 0 && (screenData[pos] & 2) == 0 && ghost.getDy() != 1) {
                     ghost.setDx(0);
                     ghost.setDy(-1);
-
+                    activated = true;
                 } else if (distanceY > 0 && (screenData[pos] & 8) == 0 && ghost.getDy() != -1) {
                     ghost.setDx(0);
                     ghost.setDy(1);
+                    activated = true;
                 }
             }
         }
 
-        else {
+        if (!activated) {
             int count = 0;
             int[] dx = new int[4];
             int[] dy = new int[4];
