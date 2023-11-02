@@ -4,6 +4,7 @@ import pacman.classes.AbstractFactory.FastFactory;
 import pacman.classes.AbstractFactory.SlowFactory;
 import pacman.classes.Adapter.AdapterInvincibility;
 import pacman.classes.Adapter.AdapterSpeed;
+import pacman.classes.Factory.ItemFactory;
 import pacman.classes.Factory.PowerPellet;
 import pacman.classes.Command.*;
 import pacman.classes.Decorator.BasicFruit;
@@ -33,38 +34,49 @@ import javax.swing.Timer;
 import pacman.classes.Observer.GameEvent;
 import pacman.classes.Observer.GameSubject;
 import pacman.classes.Observer.Scoreboard;
+import pacman.classes.Observer.ScoringSystem;
 import pacman.classes.Singleton.Gameboard;
 import pacman.classes.Pacman;
 
 public class Model extends JPanel implements ActionListener {
     Gameboard gameboard = Gameboard.getInstance();
-    private final FastFactory fastFactory = gameboard.getFastFactory();
-    private final SlowFactory slowFactory = gameboard.getSlowFactory();
-	private Dimension d = gameboard.getD();
     private final Font smallFont = gameboard.getSmallFont();
-    private boolean inGame = gameboard.isInGame();
-    private final int BLOCK_SIZE = gameboard.getBLOCK_SIZE();
-    private final int N_BLOCKS = gameboard.getN_BLOCKS();
-    private final int SCREEN_SIZE = N_BLOCKS * BLOCK_SIZE;
-    private int N_GHOSTS = gameboard.getN_GHOSTS();
-    private int[] dx = gameboard.getDx();
-    private int[] dy = gameboard.getDy();
-    private List<Ghost> ghosts = gameboard.getGhosts();
-    private Image heart = gameboard.getHeart();
-    private Image frightened = gameboard.getFrightened();
-    private Image powerUp = gameboard.getPowerUp();
-    private PowerPellet powerPellet = gameboard.getPowerPellet();
-    private BasicFruit fruit = gameboard.getFruit();
-    private Fruit ghostFrightenedFruit = gameboard.getGhostFrightenedFruit();
-    private AdapterInvincibility invincibilityAdapter = gameboard.getInvincibilityAdapter();
-    private AdapterSpeed speedAdapter = gameboard.getSpeedAdapter();
-    private Pacman pacman = gameboard.getPacman();
-    private Invoker invoker = gameboard.getInvoker();
-    private final GameSubject scoringSystem = gameboard.getScoringSystem();
-    private final Scoreboard scoreboard = gameboard.getScoreboard();
+    private final int SCREEN_SIZE = gameboard.getScreenSize();
     private final short[] levelData = gameboard.getLevelData();
     private short[] screenData = gameboard.getScreenData();
-    private Timer timer = gameboard.getTimer();
+    private final Scoreboard scoreboard = gameboard.getScoreboard();
+    private final int BLOCK_SIZE = gameboard.getBlockSize();
+    private final int N_BLOCKS = gameboard.getNBlocks();
+
+    private final FastFactory fastFactory = new FastFactory();
+    private final SlowFactory slowFactory = new SlowFactory();
+	private Dimension d;
+    private boolean inGame = false;
+
+    private int N_GHOSTS = 4;
+    private int[] dx, dy;
+
+    private List<Ghost> ghosts;
+
+    private Image heart, frightened;
+    private Image powerUp;
+
+    private ItemFactory itemFactory = new ItemFactory();
+    private PowerPellet powerPellet = (PowerPellet) itemFactory.getItem("PowerPellet");
+    private BasicFruit fruit = (BasicFruit) itemFactory.getItem("Fruit");
+    private Fruit ghostFrightenedFruit = new GhostFrightenedDecorator(fruit);
+
+    private AdapterInvincibility invincibilityAdapter = new AdapterInvincibility();
+    private AdapterSpeed speedAdapter = new AdapterSpeed();
+
+    private Pacman pacman;
+
+    private Invoker invoker = new Invoker();
+
+    private final GameSubject scoringSystem = new ScoringSystem();
+
+    private Timer timer;
+
 
     public Model() {
         loadImages();
