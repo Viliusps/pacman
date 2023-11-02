@@ -4,11 +4,14 @@ import pacman.classes.AbstractFactory.FastFactory;
 import pacman.classes.AbstractFactory.SlowFactory;
 import pacman.classes.Adapter.AdapterInvincibility;
 import pacman.classes.Adapter.AdapterSpeed;
-import pacman.classes.Factory.Fruit;
 import pacman.classes.Factory.ItemFactory;
 import pacman.classes.Factory.Pellet;
 import pacman.classes.Factory.PowerPellet;
 import pacman.classes.Command.*;
+import pacman.classes.Decorator.BasicFruit;
+import pacman.classes.Decorator.DoublePointsDecorator;
+import pacman.classes.Decorator.Fruit;
+import pacman.classes.Decorator.GhostFrightenedDecorator;
 import pacman.classes.Ghost;
 
 import java.awt.BasicStroke;
@@ -56,8 +59,11 @@ public class Model extends JPanel implements ActionListener {
 
     private ItemFactory itemFactory = new ItemFactory();
     private PowerPellet powerPellet = (PowerPellet) itemFactory.getItem("PowerPellet");
-    private Fruit fruit = (Fruit) itemFactory.getItem("Fruit");
+    private BasicFruit fruit = (BasicFruit) itemFactory.getItem("Fruit");
     private Pellet pellet = (Pellet) itemFactory.getItem("Pellet");
+
+    private Fruit doublePointsFruit = new DoublePointsDecorator(fruit);
+    private Fruit frightenedFruit = new GhostFrightenedDecorator(fruit);
 
     private AdapterInvincibility invincibilityAdapter = new AdapterInvincibility();
     private AdapterSpeed speedAdapter = new AdapterSpeed();

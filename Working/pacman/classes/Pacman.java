@@ -116,6 +116,18 @@ public class Pacman {
 
     public void setInvincible(){
         this.invincible = !this.invincible;
+        if(!invincible){
+            this.down = new ImageIcon("./Working/images/down.gif").getImage();
+            this.up = new ImageIcon("./Working/images/up.gif").getImage();
+            this.left = new ImageIcon("./Working/images/left.gif").getImage();
+            this.right = new ImageIcon("./Working/images/right.gif").getImage();
+        }
+        else{
+            this.down = new ImageIcon("./Working/images/downGray.gif").getImage();
+            this.up = new ImageIcon("./Working/images/upGray.gif").getImage();
+            this.left = new ImageIcon("./Working/images/leftGray.gif").getImage();
+            this.right = new ImageIcon("./Working/images/rightGray.gif").getImage();
+        }
     }
 
     public boolean getInvincible(){

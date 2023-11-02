@@ -1,15 +1,17 @@
-package pacman.classes.Factory;
+package pacman.classes.Decorator;
 
 import java.awt.Image;
 
 import javax.swing.ImageIcon;
 
-public class Fruit implements Item
+import pacman.classes.Factory.Item;
+
+public class BasicFruit implements Fruit, Item
 {
 	private int points;
-    private Image image;
-
-    public Fruit(){
+	private Image image;
+	
+    public BasicFruit(){
         this.points = 20;
         this.image = new ImageIcon("./Working/images/fruit.gif").getImage();
     }
@@ -31,5 +33,4 @@ public class Fruit implements Item
     public void setImage(Image image) {
         this.image = image;
     }
-
 }
