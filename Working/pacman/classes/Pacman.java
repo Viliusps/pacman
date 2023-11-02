@@ -161,6 +161,14 @@ public class Pacman {
         subject.notifyObservers(new GameEvent(GameEvent.EventType.FRUIT_EATEN));
     }
 
+    public void eatDoublePointsFruit(GameSubject subject) {
+        subject.notifyObservers(new GameEvent(GameEvent.EventType.DOUBLE_POINTS_FRUIT_EATEN));
+    }
+
+    public void eatGhostFrightenedFruit(GameSubject subject) {
+        subject.notifyObservers(new GameEvent(GameEvent.EventType.GHOST_FRIGHTENED_FRUIT_EATEN));
+    }
+
     public void eatGhost(GameSubject subject) {
         subject.notifyObservers(new GameEvent(GameEvent.EventType.GHOST_EATEN));
     }

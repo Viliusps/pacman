@@ -11,7 +11,7 @@ public abstract class FruitDecorator implements Fruit
 	@Override
 	public int getPoints( )
 	{
-		return 0;
+		return this.decoratedFruit.getPoints();
 	}
 	
 	

@@ -9,7 +9,7 @@ public class DoublePointsDecorator extends FruitDecorator
 	@Override
 	public int getPoints( )
 	{
-		return 0;
+		return super.getPoints() * 2;
 	}
 	
 	
