@@ -1,6 +1,9 @@
 package pacman.classes.Observer;
 
-import pacman.classes.Factory.Fruit;
+import pacman.classes.Decorator.BasicFruit;
+import pacman.classes.Decorator.DoublePointsDecorator;
+import pacman.classes.Decorator.Fruit;
+import pacman.classes.Decorator.GhostFrightenedDecorator;
 import pacman.classes.Factory.ItemFactory;
 import pacman.classes.Factory.Pellet;
 import pacman.classes.Factory.PowerPellet;
@@ -8,8 +11,11 @@ import pacman.classes.Factory.PowerPellet;
 public class Scoreboard implements GameObserver {
     private final ItemFactory itemFactory = new ItemFactory();
     private final PowerPellet powerPellet = (PowerPellet) itemFactory.getItem("PowerPellet");
-    private final Fruit fruit = (Fruit) itemFactory.getItem("Fruit");
+    private final BasicFruit fruit = (BasicFruit) itemFactory.getItem("Fruit");
     private final Pellet pellet = (Pellet) itemFactory.getItem("Pellet");
+
+    private Fruit doublePointsFruit = new DoublePointsDecorator(fruit);
+    private Fruit frightenedFruit = new GhostFrightenedDecorator(fruit);
 
     private int score = 0;
 
@@ -27,6 +33,10 @@ public class Scoreboard implements GameObserver {
             handleScore(50);
         } else if (event.getType().equals(GameEvent.EventType.RESET)) {
             handleScore(-this.score);
+        } else if(event.getType().equals(GameEvent.EventType.DOUBLE_POINTS_FRUIT_EATEN)) {
+            handleScore(doublePointsFruit.getPoints());
+        } else if(event.getType().equals(GameEvent.EventType.GHOST_FRIGHTENED_FRUIT_EATEN)) {
+            handleScore(frightenedFruit.getPoints());
         }
     }
 

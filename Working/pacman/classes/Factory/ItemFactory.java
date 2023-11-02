@@ -1,5 +1,7 @@
 package pacman.classes.Factory;
 
+import pacman.classes.Decorator.BasicFruit;
+
 //Add random appearing feature, with temporary time
 public class ItemFactory
 {
@@ -12,7 +14,7 @@ public class ItemFactory
 			case "Pellet":
 				return new Pellet();
 			case "Fruit":
-				return new Fruit();
+				return new BasicFruit();
 			case "PowerPellet":
 				return new PowerPellet();
 		}

@@ -7,7 +7,9 @@ public class GameEvent {
         POWER_PELLET_EATEN,
         FRUIT_EATEN,
         GAME_FINISHED,
-        RESET
+        RESET,
+        DOUBLE_POINTS_FRUIT_EATEN,
+        GHOST_FRIGHTENED_FRUIT_EATEN
     }
 
     private final EventType type;

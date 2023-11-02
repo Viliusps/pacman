@@ -118,6 +118,18 @@ public class Pacman {
 
     public void setInvincible(){
         this.invincible = !this.invincible;
+        if(!invincible){
+            this.down = new ImageIcon("./Working/images/down.gif").getImage();
+            this.up = new ImageIcon("./Working/images/up.gif").getImage();
+            this.left = new ImageIcon("./Working/images/left.gif").getImage();
+            this.right = new ImageIcon("./Working/images/right.gif").getImage();
+        }
+        else{
+            this.down = new ImageIcon("./Working/images/downGray.gif").getImage();
+            this.up = new ImageIcon("./Working/images/upGray.gif").getImage();
+            this.left = new ImageIcon("./Working/images/leftGray.gif").getImage();
+            this.right = new ImageIcon("./Working/images/rightGray.gif").getImage();
+        }
     }
 
     public boolean getInvincible(){
@@ -147,6 +159,14 @@ public class Pacman {
 
     public void eatFruit(GameSubject subject) {
         subject.notifyObservers(new GameEvent(GameEvent.EventType.FRUIT_EATEN));
+    }
+
+    public void eatDoublePointsFruit(GameSubject subject) {
+        subject.notifyObservers(new GameEvent(GameEvent.EventType.DOUBLE_POINTS_FRUIT_EATEN));
+    }
+
+    public void eatGhostFrightenedFruit(GameSubject subject) {
+        subject.notifyObservers(new GameEvent(GameEvent.EventType.GHOST_FRIGHTENED_FRUIT_EATEN));
     }
 
     public void eatGhost(GameSubject subject) {

@@ -4,10 +4,12 @@ import pacman.classes.AbstractFactory.FastFactory;
 import pacman.classes.AbstractFactory.SlowFactory;
 import pacman.classes.Adapter.AdapterInvincibility;
 import pacman.classes.Adapter.AdapterSpeed;
-import pacman.classes.Factory.Fruit;
 import pacman.classes.Factory.ItemFactory;
 import pacman.classes.Factory.PowerPellet;
 import pacman.classes.Command.*;
+import pacman.classes.Decorator.BasicFruit;
+import pacman.classes.Decorator.Fruit;
+import pacman.classes.Decorator.GhostFrightenedDecorator;
 import pacman.classes.Ghost;
 
 import java.awt.BasicStroke;
@@ -24,6 +26,7 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -55,7 +58,8 @@ public class Model extends JPanel implements ActionListener {
 
     private ItemFactory itemFactory = new ItemFactory();
     private PowerPellet powerPellet = (PowerPellet) itemFactory.getItem("PowerPellet");
-    private Fruit fruit = (Fruit) itemFactory.getItem("Fruit");
+    private BasicFruit fruit = (BasicFruit) itemFactory.getItem("Fruit");
+    private Fruit ghostFrightenedFruit = new GhostFrightenedDecorator(fruit);
 
     private AdapterInvincibility invincibilityAdapter = new AdapterInvincibility();
     private AdapterSpeed speedAdapter = new AdapterSpeed();
@@ -75,13 +79,13 @@ public class Model extends JPanel implements ActionListener {
         0,  0,  0,  0,  0,  0, 17, 16, 16, 16, 16, 16, 16, 16, 20,
         19, 18, 18, 18, 18, 18, 16, 16, 16, 16, 24, 24, 24, 24, 20,
         17, 16, 16, 16, 16, 16, 16, 16, 16, 20, 0,  0,  0,   0, 21,
-        17, 16, 64, 16, 16, 16, 32, 16, 16, 20, 0,  0,  0,   0, 21,
+        17, 16, 64, 16, 16, 16, 16, 16, 16, 20, 0,  0,  0,   0, 21,
         17, 16, 16, 16, 24, 16, 16, 16, 16, 20, 0,  0,  0,   0, 21,
         17, 16, 16, 20, 0, 17, 16, 16, 16, 16, 18, 18, 18, 18, 20,
         17, 24, 24, 28, 0, 25, 24, 24, 16, 16, 16, 16, 16, 16, 20,
         21, 0,  0,  0,  0,  0,  0,   0, 17, 16, 16, 16, 16, 16, 20,
         17, 18, 18, 22, 0, 19, 18, 18, 16, 16, 16, 16, 16, 16, 20,
-        17, 16, 16, 20, 0, 17, 16, 16, 16, 16, 16, 16, 32, 16, 20,
+        17, 16, 16, 20, 0, 17, 64, 16, 16, 16, 16, 16, 16, 16, 20,
         17, 16, 16, 20, 0, 17, 16, 16, 16, 16, 16, 16, 16, 16, 20,
         25, 24, 24, 24, 26, 24, 24, 24, 24, 24, 24, 24, 24, 24, 28
     };
@@ -332,9 +336,24 @@ public class Model extends JPanel implements ActionListener {
             }
             else if ((ch & 64) != 0) {
                 screenData[pos] = (short) (ch & 15);
-                pacman.eatFruit(scoringSystem);
-                pacman.setPowerUp(invincibilityAdapter);
-                pacman.applyPowerUp();
+
+                Random random = new Random();
+                int randomChoice = random.nextInt(3);
+
+                switch (randomChoice) {
+                    case 0:
+                        pacman.eatFruit(scoringSystem);
+                        pacman.setPowerUp(invincibilityAdapter);
+                        pacman.applyPowerUp();
+                        break;
+                    case 1:
+                        pacman.eatDoublePointsFruit(scoringSystem);
+                        break;
+                    case 2:
+                        pacman.eatGhostFrightenedFruit(scoringSystem);
+                        ((GhostFrightenedDecorator)ghostFrightenedFruit).setGhostsFrightened(ghosts);
+                        break;
+                }
             }
             else if ((ch & 16) != 0) {
                 screenData[pos] = (short) (ch & 15);
