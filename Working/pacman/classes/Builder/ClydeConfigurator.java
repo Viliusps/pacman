@@ -39,6 +39,11 @@ public class ClydeConfigurator {
 		this.clyde.setColor(color);
 		return this;
 	}
+
+	public ClydeConfigurator addFrightened(Boolean frightened) {
+		this.clyde.setFrightened(frightened);
+		return this;
+	}
 	
 	public Clyde build() {
 		return this.clyde;

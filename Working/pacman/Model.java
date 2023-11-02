@@ -25,6 +25,9 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
@@ -32,7 +35,8 @@ import javax.swing.Timer;
 import pacman.classes.Pacman;
 
 public class Model extends JPanel implements ActionListener {
-
+    private final FastFactory fastFactory = new FastFactory();
+    private final SlowFactory slowFactory = new SlowFactory();
 	private Dimension d;
     private final Font smallFont = new Font("Arial", Font.BOLD, 14);
     private boolean inGame = false;
@@ -47,7 +51,7 @@ public class Model extends JPanel implements ActionListener {
 
     private List<Ghost> ghosts;
 
-    private Image heart;
+    private Image heart, frightened;
     private Image powerUp;
 
     private ItemFactory itemFactory = new ItemFactory();
@@ -85,7 +89,6 @@ public class Model extends JPanel implements ActionListener {
     private int currentSpeed = 3;
     private short[] screenData;
     private Timer timer;
-    
 
     public Model() {
         loadImages();
@@ -125,12 +128,16 @@ public class Model extends JPanel implements ActionListener {
     private void loadImages() {
         heart = new ImageIcon("./Working/images/heart.png").getImage();
         powerUp = new ImageIcon("./Working/images/powerUp.gif").getImage();
-
+        frightened = new ImageIcon("./Working/images/frightened.gif").getImage();
     }
     private void initVariables() {
         screenData = new short[N_BLOCKS * N_BLOCKS];
         d = new Dimension(400, 400);
         ghosts = new ArrayList<>();
+        ghosts.add(fastFactory.getBlinky());
+        ghosts.add(fastFactory.getClyde());
+        ghosts.add(slowFactory.getInky());
+        ghosts.add(slowFactory.getPinky());
         pacman = new Pacman();
         dx = new int[4];
         dy = new int[4];
@@ -140,13 +147,9 @@ public class Model extends JPanel implements ActionListener {
     }
 
     private void playGame(Graphics2D g2d) {
-
         if (pacman.getDying()) {
-
             death();
-
         } else {
-
             movePacman();
             drawPacman(g2d);
             moveGhosts(g2d);
@@ -155,10 +158,14 @@ public class Model extends JPanel implements ActionListener {
     }
 
     private void showIntroScreen(Graphics2D g2d) {
- 
     	String start = "Press SPACE to start";
         g2d.setColor(Color.yellow);
         g2d.drawString(start, (SCREEN_SIZE)/4, 150);
+        if (pacman.getScore() != 0) {
+            String score = "Final score: " + pacman.getScore();
+            g2d.setColor(Color.yellow);
+            g2d.drawString(score, (SCREEN_SIZE)/4, 170);
+        }
     }
 
     private void drawScore(Graphics2D g) {
@@ -170,6 +177,18 @@ public class Model extends JPanel implements ActionListener {
         for (int i = 0; i < pacman.getLives(); i++) {
             g.drawImage(heart, i * 28 + 8, SCREEN_SIZE + 1, this);
         }
+    }
+
+    private void frightenedDurationCounter() {
+        int frightenedDuration = 3;
+        ScheduledExecutorService executor = Executors.newScheduledThreadPool(1);
+
+        executor.schedule(() -> {
+            for (Ghost ghost : ghosts) {
+                ghost.setFrightened(false);
+            }
+            executor.shutdown();
+        }, frightenedDuration, TimeUnit.SECONDS);
     }
 
     private void checkMaze() {
@@ -203,10 +222,18 @@ public class Model extends JPanel implements ActionListener {
     }
 
     private void death() {
-
         pacman.setLives(pacman.getLives() - 1);
-
+        for (Ghost ghost : ghosts) {
+            ghost.setFrightened(Boolean.FALSE);
+            ghost.setX(96);
+            ghost.setY(96);
+        }
         if (pacman.getLives() == 0) {
+            ghosts = new ArrayList<>();
+            ghosts.add(fastFactory.getBlinky());
+            ghosts.add(fastFactory.getClyde());
+            ghosts.add(slowFactory.getInky());
+            ghosts.add(slowFactory.getPinky());
             inGame = false;
         }
 
@@ -274,13 +301,21 @@ public class Model extends JPanel implements ActionListener {
             ghost.setX(ghost.getX()+(ghost.getDx()) * ghost.getSpeed());
             ghost.setY(ghost.getY()+(ghost.getDy()) * ghost.getSpeed());
 
-            drawGhost(g2d, ghost.getColor(),  ghost.getX() + 1, ghost.getY() + 1);
+            if (ghost.getFrightened()) {
+                drawGhost(g2d, frightened,  ghost.getX() + 1, ghost.getY() + 1);
+            } else {
+                drawGhost(g2d, ghost.getColor(),  ghost.getX() + 1, ghost.getY() + 1);
+            }
 
             if (pacman.getX() > (ghost.getX() - 12) && pacman.getX() < (ghost.getX() + 12)
                     && pacman.getY() > (ghost.getY() - 12) && pacman.getY() < (ghost.getY() + 12)
                     && inGame) {
-
-                if(!pacman.getInvincible()) pacman.setDying(true);
+                if (ghost.getFrightened()) {
+                    ghosts.remove(i);
+                    N_GHOSTS--;
+                } else if(!pacman.getInvincible()) {
+                    pacman.setDying(true);
+                }
             }
         }
     }
@@ -301,6 +336,10 @@ public class Model extends JPanel implements ActionListener {
             if ((ch & 32) != 0) {
                 screenData[pos] = (short) (ch & 15);
                 pacman.addScore(powerPellet.getPoints());
+                for (Ghost ghost : ghosts) {
+                    ghost.setFrightened(true);
+                }
+                frightenedDurationCounter();
             }
             else if ((ch & 64) != 0) {
                 screenData[pos] = (short) (ch & 15);
@@ -398,7 +437,7 @@ public class Model extends JPanel implements ActionListener {
                     g2d.setColor(new Color(255,255,255));
                     g2d.fillOval(x + 10, y + 10, 6, 6);
                 }
-                else if ((screenData[i] & 128) != 0) { 
+                else if ((screenData[i] & 128) != 0) {
                     g2d.drawImage(powerUp, x - 5, y - 5, 35, 35, this);
                 }
                 i++;
@@ -425,14 +464,6 @@ public class Model extends JPanel implements ActionListener {
     }
 
     private void continueLevel() {
-        var fastFactory = new FastFactory();
-        var slowFactory = new SlowFactory();
-
-        ghosts.add(fastFactory.getBlinky());
-        ghosts.add(fastFactory.getClyde());
-        ghosts.add(slowFactory.getInky());
-        ghosts.add(slowFactory.getPinky());
-
         pacman.setX(7 * BLOCK_SIZE);  //start position
         pacman.setY(11 * BLOCK_SIZE);
         pacman.setDX(0);//reset direction move
@@ -441,7 +472,6 @@ public class Model extends JPanel implements ActionListener {
         pacman.setDying(false);
     }
 
- 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
 

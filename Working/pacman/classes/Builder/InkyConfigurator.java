@@ -39,6 +39,11 @@ public class InkyConfigurator {
 		this.inky.setColor(color);
 		return this;
 	}
+
+	public InkyConfigurator addFrightened(Boolean frightened) {
+		this.inky.setFrightened(frightened);
+		return this;
+	}
 	
 	public Inky build()	{
 		return inky;

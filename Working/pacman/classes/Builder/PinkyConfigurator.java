@@ -39,6 +39,11 @@ public class PinkyConfigurator {
 		this.pinky.setColor(color);
 		return this;
 	}
+
+	public PinkyConfigurator addFrightened(Boolean frightened) {
+		this.pinky.setFrightened(frightened);
+		return this;
+	}
 	
 	public Pinky build() {
 		return pinky;

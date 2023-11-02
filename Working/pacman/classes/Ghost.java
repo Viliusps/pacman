@@ -9,6 +9,7 @@ public class Ghost {
     private int dy;
     private int speed;
     private Image color;
+    private Boolean frightened;
 
     public int getX() {
         return this.x;
@@ -34,6 +35,10 @@ public class Ghost {
         return this.color;
     }
 
+    public Boolean getFrightened() {
+        return this.frightened;
+    }
+
     public void setX(int x) {
         this.x = x;
     }
@@ -56,5 +61,9 @@ public class Ghost {
 
     public void setColor(Image color) {
         this.color = color;
+    }
+
+    public void setFrightened(Boolean frightened) {
+        this.frightened = frightened;
     }
 }

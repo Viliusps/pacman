@@ -39,6 +39,11 @@ public class BlinkyConfigurator {
 		this.blinky.setColor(color);
 		return this;
 	}
+
+	public BlinkyConfigurator addFrightened(Boolean frightened) {
+		this.blinky.setFrightened(frightened);
+		return this;
+	}
 	
 	public Blinky build() {
 		return blinky;
