@@ -11,6 +11,9 @@ import pacman.classes.Decorator.BasicFruit;
 import pacman.classes.Decorator.Fruit;
 import pacman.classes.Decorator.GhostFrightenedDecorator;
 import pacman.classes.Ghost;
+import pacman.classes.Observer.*;
+import pacman.classes.Singleton.Gameboard;
+import pacman.classes.Pacman;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -27,18 +30,12 @@ import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-import pacman.classes.Observer.GameEvent;
-import pacman.classes.Observer.GameSubject;
-import pacman.classes.Observer.Scoreboard;
-import pacman.classes.Observer.ScoringSystem;
-import pacman.classes.Singleton.Gameboard;
-import pacman.classes.Pacman;
-
-public class Model extends JPanel implements ActionListener {
+public class Model extends JPanel implements ActionListener, GameObserver {
     Gameboard gameboard = Gameboard.getInstance();
     private final Font smallFont = gameboard.getSmallFont();
     private final int SCREEN_SIZE = gameboard.getScreenSize();
@@ -60,56 +57,31 @@ public class Model extends JPanel implements ActionListener {
     private Image heart, frightened;
     private Image powerUp;
 
-    private ItemFactory itemFactory = new ItemFactory();
-    private PowerPellet powerPellet = (PowerPellet) itemFactory.getItem("PowerPellet");
-    private BasicFruit fruit = (BasicFruit) itemFactory.getItem("Fruit");
-    private Fruit ghostFrightenedFruit = new GhostFrightenedDecorator(fruit);
+    private final ItemFactory itemFactory = new ItemFactory();
+    private final PowerPellet powerPellet = (PowerPellet) itemFactory.getItem("PowerPellet");
+    private final BasicFruit fruit = (BasicFruit) itemFactory.getItem("Fruit");
+    private final Fruit ghostFrightenedFruit = new GhostFrightenedDecorator(fruit);
 
-    private AdapterInvincibility invincibilityAdapter = new AdapterInvincibility();
-    private SpeedPowerUp speedAdapter = new SpeedPowerUp();
+    private final AdapterInvincibility invincibilityAdapter = new AdapterInvincibility();
+    private final SpeedPowerUp speedAdapter = new SpeedPowerUp();
 
     private Pacman pacman;
 
     private Invoker invoker = new Invoker();
 
-    private final GameSubject scoringSystem = new ScoringSystem();
+    private final GameSubject scoringSystem = new GameEventSystem();
 
     private Timer timer;
+
+    private int pelletEatenCount = 0;
 
 
     public Model() {
         loadImages();
         initVariables();
-        changeRandomValue();
         addKeyListener(new TAdapter());
         setFocusable(true);
         initGame();
-    }
-
-    private void changeRandomValue() {
-        int delay = 10000;
-
-        Timer valueChangeTimer = new Timer(delay, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int[] validIndices = new int[screenData.length];
-                int validCount = 0;
-
-                for (int i = 0; i < screenData.length; i++) {
-                    if (screenData[i] == 16) {
-                        validIndices[validCount] = i;
-                        validCount++;
-                    }
-                }
-
-                if (validCount > 0) {
-                    int randomIndex = validIndices[(int) (Math.random() * validCount)];
-                    screenData[randomIndex] = 128;
-                }
-            }
-        });
-        valueChangeTimer.setRepeats(false);
-        valueChangeTimer.start();
     }
 
     private void loadImages() {
@@ -122,6 +94,7 @@ public class Model extends JPanel implements ActionListener {
         d = new Dimension(400, 400);
         pacman = new Pacman();
         scoringSystem.addObserver(scoreboard);
+        scoringSystem.addObserver(this);
         
         timer = new Timer(40, this);
         timer.start();
@@ -195,7 +168,6 @@ public class Model extends JPanel implements ActionListener {
 
         if (finished) {
             scoringSystem.notifyObservers(new GameEvent(GameEvent.EventType.GAME_FINISHED));
-
             initLevel();
         }
     }
@@ -215,7 +187,6 @@ public class Model extends JPanel implements ActionListener {
     }
 
     private void moveGhosts(Graphics2D g2d) {
-
         for (int i = 0; i < N_GHOSTS; i++) {
             var ghost = ghosts.get(i);
             ghost.move(pacman, screenData, BLOCK_SIZE, N_BLOCKS, ghosts);
@@ -268,18 +239,16 @@ public class Model extends JPanel implements ActionListener {
                 int randomChoice = random.nextInt(3);
 
                 switch (randomChoice) {
-                    case 0:
+                    case 0 -> {
                         pacman.eatFruit(scoringSystem);
                         pacman.setPowerUp(invincibilityAdapter);
                         pacman.applyPowerUp();
-                        break;
-                    case 1:
-                        pacman.eatDoublePointsFruit(scoringSystem);
-                        break;
-                    case 2:
+                    }
+                    case 1 -> pacman.eatDoublePointsFruit(scoringSystem);
+                    case 2 -> {
                         pacman.eatGhostFrightenedFruit(scoringSystem);
-                        ((GhostFrightenedDecorator)ghostFrightenedFruit).setGhostsFrightened(ghosts);
-                        break;
+                        ((GhostFrightenedDecorator) ghostFrightenedFruit).setGhostsFrightened(ghosts);
+                    }
                 }
             }
             else if ((ch & 16) != 0) {
@@ -393,6 +362,7 @@ public class Model extends JPanel implements ActionListener {
         ghosts.add(fastFactory.getClyde());
         ghosts.add(slowFactory.getInky());
         ghosts.add(slowFactory.getPinky());
+        pelletEatenCount = 0;
         N_GHOSTS = 4;
         int i;
         for (i = 0; i < N_BLOCKS * N_BLOCKS; i++) {
@@ -432,6 +402,37 @@ public class Model extends JPanel implements ActionListener {
         g2d.dispose();
     }
 
+    private final AtomicBoolean flag = new AtomicBoolean(false);
+    @Override
+    public void update(GameEvent event) {
+        if (event.getType().equals(GameEvent.EventType.PELLET_EATEN)) {
+            pelletEatenCount++;
+        }
+
+        if (flag.compareAndSet(false, true)) {
+            if (pelletEatenCount == 30) {
+                updateRandomPelletToPowerUp();
+            }
+            flag.set(false);
+        }
+    }
+
+    private void updateRandomPelletToPowerUp() {
+        int[] validIndices = new int[screenData.length];
+        int validCount = 0;
+
+        for (int i = 0; i < screenData.length; i++) {
+            if (screenData[i] == 16) {
+                validIndices[validCount] = i;
+                validCount++;
+            }
+        }
+
+        if (validCount > 0) {
+            int randomIndex = validIndices[(int) (Math.random() * validCount)];
+            screenData[randomIndex] = 128;
+        }
+    }
 
     //controls
     class TAdapter extends KeyAdapter {
@@ -460,7 +461,6 @@ public class Model extends JPanel implements ActionListener {
             }
         }
     }
-
 	
     @Override
     public void actionPerformed(ActionEvent e) {
