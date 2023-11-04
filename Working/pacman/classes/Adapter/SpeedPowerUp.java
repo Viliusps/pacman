@@ -1,14 +1,20 @@
 package pacman.classes.Adapter;
 
+import pacman.classes.Pacman;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.Timer;
 
-import pacman.classes.Pacman;
+public class SpeedPowerUp implements PowerUpAdapter
+{
 
-public class SpeedPowerUp {
-    public void addSpeed(Pacman pacman) {
+	public SpeedPowerUp(){
+	}
+	
+	public void apply(Pacman pacman )
+	{
         int originalSpeed = pacman.getSpeed();
         pacman.setSpeed(6);
 
@@ -21,5 +27,6 @@ public class SpeedPowerUp {
         });
         speedTimer.setRepeats(false);
         speedTimer.start();
-    }
+	}
+	
 }
