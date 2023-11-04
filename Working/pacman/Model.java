@@ -3,7 +3,7 @@ package pacman;
 import pacman.classes.AbstractFactory.FastFactory;
 import pacman.classes.AbstractFactory.SlowFactory;
 import pacman.classes.Adapter.AdapterInvincibility;
-import pacman.classes.Adapter.AdapterSpeed;
+import pacman.classes.Adapter.SpeedPowerUp;
 import pacman.classes.Factory.ItemFactory;
 import pacman.classes.Factory.PowerPellet;
 import pacman.classes.Command.*;
@@ -66,7 +66,7 @@ public class Model extends JPanel implements ActionListener {
     private Fruit ghostFrightenedFruit = new GhostFrightenedDecorator(fruit);
 
     private AdapterInvincibility invincibilityAdapter = new AdapterInvincibility();
-    private AdapterSpeed speedAdapter = new AdapterSpeed();
+    private SpeedPowerUp speedAdapter = new SpeedPowerUp();
 
     private Pacman pacman;
 
