@@ -1,7 +1,6 @@
 package pacman.classes.AbstractFactory;
 
 import pacman.classes.Inky;
-import pacman.classes.Prototype.Prototype;
 
 public class SlowInky extends Inky {
     @Override

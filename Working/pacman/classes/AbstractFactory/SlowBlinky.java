@@ -1,7 +1,6 @@
 package pacman.classes.AbstractFactory;
 
 import pacman.classes.Blinky;
-import pacman.classes.Prototype.Prototype;
 
 public class SlowBlinky extends Blinky {
     @Override

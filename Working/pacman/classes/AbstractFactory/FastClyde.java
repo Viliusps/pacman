@@ -1,7 +1,6 @@
 package pacman.classes.AbstractFactory;
 
 import pacman.classes.Clyde;
-import pacman.classes.Prototype.Prototype;
 
 public class FastClyde extends Clyde {
     @Override
