@@ -1,8 +1,6 @@
 package pacman.classes.AbstractFactory;
 
-import pacman.classes.Blinky;
 import pacman.classes.Inky;
-import pacman.classes.Prototype.Prototype;
 
 public class FastInky extends Inky {
     @Override

@@ -84,8 +84,8 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         initVariables();
         addKeyListener(new TAdapter());
         setFocusable(true);
-        initGame();
     }
+
 
     private void loadImages() {
         heart = new ImageIcon("./Working/images/heart.png").getImage();
@@ -353,7 +353,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         }
     }
 
-    private void initGame() {
+    public void initGame() {
         GAMES_PLAYED = 0;
         pacman.setLives(3);
         scoringSystem.notifyObservers(new GameEvent(GameEvent.EventType.RESET));
@@ -447,6 +447,10 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         }
     }
 
+    public Invoker getInvoker() {
+        return this.invoker;
+    }
+
     //controls
     class TAdapter extends KeyAdapter {
         @Override
@@ -478,5 +482,17 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     @Override
     public void actionPerformed(ActionEvent e) {
         repaint();
+    }
+
+    public void setTimerStop() {
+        this.timer.stop();
+    }
+
+    public boolean getInGame() {
+    	return this.inGame;
+    }
+
+    public void setInGame(boolean set) {
+        this.inGame = set;
     }
 }
