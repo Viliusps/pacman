@@ -1,11 +1,12 @@
 package pacman.classes;
 
+import pacman.classes.Prototype.Prototype;
 import pacman.classes.Strategy.MoveAlgorithm;
 
 import java.awt.*;
 import java.util.List;
 
-public class Ghost {
+public class Ghost implements Prototype {
     private int x;
     private int y;
     private int dx;
@@ -73,6 +74,7 @@ public class Ghost {
     }
 
     public void setStrategy(MoveAlgorithm strategy) { this.strategy = strategy;}
+    public MoveAlgorithm getStrategy() { return this.strategy; }
 
     public void move(Pacman pac, short[] screenData, int blockSize, int nBlocks, List<Ghost> ghosts) {
         if (this.x % blockSize == 0 && this.y % blockSize == 0) {
@@ -81,5 +83,28 @@ public class Ghost {
         }
         this.x = (this.x + this.dx * this.speed);
         this.y = (this.y + this.dy * this.speed);
+    }
+
+    @Override
+    public Ghost deepClone() {
+        Ghost ghost = new Ghost();
+        ghost.setX(this.x);
+        ghost.setY(this.y);
+        ghost.setDx(this.dx);
+        ghost.setDy(this.dy);
+        ghost.setSpeed(this.speed);
+        ghost.setColor(this.color);
+        ghost.setFrightened(this.frightened);
+        ghost.setStrategy(this.strategy);
+        return ghost;
+    }
+
+    @Override
+    public Ghost clone() {
+        try {
+            return (Ghost) super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new AssertionError(e);
+        }
     }
 }

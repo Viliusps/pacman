@@ -45,12 +45,15 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     private final int BLOCK_SIZE = gameboard.getBlockSize();
     private final int N_BLOCKS = gameboard.getNBlocks();
 
+
     private final FastFactory fastFactory = new FastFactory();
     private final SlowFactory slowFactory = new SlowFactory();
 	private Dimension d;
     private boolean inGame = false;
 
     private int N_GHOSTS = 4;
+
+    private int GAMES_PLAYED = 0;
 
     private List<Ghost> ghosts;
 
@@ -168,6 +171,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
 
         if (finished) {
             scoringSystem.notifyObservers(new GameEvent(GameEvent.EventType.GAME_FINISHED));
+            GAMES_PLAYED++;
             initLevel();
         }
     }
@@ -350,25 +354,34 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     }
 
     private void initGame() {
+        GAMES_PLAYED = 0;
         pacman.setLives(3);
         scoringSystem.notifyObservers(new GameEvent(GameEvent.EventType.RESET));
         initLevel();
-        N_GHOSTS = 4;
+        N_GHOSTS = ghosts.size();
     }
 
     private void initLevel() {
         ghosts = new ArrayList<>();
-        ghosts.add(fastFactory.getBlinky());
-        ghosts.add(fastFactory.getClyde());
-        ghosts.add(slowFactory.getInky());
-        ghosts.add(slowFactory.getPinky());
+        Ghost ghost = slowFactory.getBlinky();
+        ghosts.add(ghost);
+        ghost = fastFactory.getClyde();
+        ghosts.add(ghost);
+        ghost = fastFactory.getInky();
+        ghosts.add(ghost);
+        ghost = slowFactory.getPinky();
+        ghosts.add(ghost);
         pelletEatenCount = 0;
-        N_GHOSTS = 4;
+        Random rnd = new Random();
+        for (int i = 0; i < GAMES_PLAYED; i++) {
+            ghost = ghosts.get(rnd.nextInt(0, ghosts.size()));
+            ghosts.add(ghost.deepClone());
+        }
+        N_GHOSTS = ghosts.size();
         int i;
         for (i = 0; i < N_BLOCKS * N_BLOCKS; i++) {
             screenData[i] = levelData[i];
         }
-
         continueLevel();
     }
 
