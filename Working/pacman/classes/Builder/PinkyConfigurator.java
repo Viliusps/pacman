@@ -37,8 +37,8 @@ public class PinkyConfigurator {
 		return this;
 	}
 
-	public PinkyConfigurator addColor(Image color) {
-		this.pinky.setColor(color);
+	public PinkyConfigurator addColor() {
+		this.pinky.setColor();
 		return this;
 	}
 

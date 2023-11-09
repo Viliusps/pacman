@@ -37,8 +37,8 @@ public class BlinkyConfigurator {
 		return this;
 	}
 
-	public BlinkyConfigurator addColor(Image color) {
-		this.blinky.setColor(color);
+	public BlinkyConfigurator addColor() {
+		this.blinky.setColor();
 		return this;
 	}
 

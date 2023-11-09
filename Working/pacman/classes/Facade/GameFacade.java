@@ -17,6 +17,10 @@ public class GameFacade {
         model.initGame();
     }
 
+    public void playGame() {
+
+    }
+
     public Model getModel()
     {
         return this.model;
@@ -37,6 +41,10 @@ public class GameFacade {
 
     public void movePacmanDown() {
         model.getInvoker().setCommand(new DownMove());
+    }
+
+    public void moveGhosts() {
+        model.moveGhosts();
     }
 
     public void endGame() {
