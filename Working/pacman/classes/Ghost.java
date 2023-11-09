@@ -74,7 +74,6 @@ public class Ghost implements Prototype {
 
     public void setColor() {
         this.color = imageColor.getColor();
-        System.out.println("Color: " + this.color);
     }
 
     public void setFrightened(Boolean frightened) {
