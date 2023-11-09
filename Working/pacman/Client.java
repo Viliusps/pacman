@@ -7,8 +7,8 @@ import javax.swing.*;
 public class Client extends JFrame{
 	private Facade facade;
 	public Client() {
-		facade = new Facade();
-		add(facade);
+		facade = new Facade(3);
+		add(facade.getModel());
 		setTitle("Pacman");
 		setSize(380, 420);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
