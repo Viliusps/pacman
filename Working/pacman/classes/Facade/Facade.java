@@ -1,4 +1,4 @@
-package pacman;
+package pacman.classes.Facade;
 
 import pacman.classes.AbstractFactory.FastFactory;
 import pacman.classes.AbstractFactory.SlowFactory;
@@ -35,7 +35,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 import javax.swing.Timer;
 
-public class Model extends JPanel implements ActionListener, GameObserver {
+public class Facade extends JPanel implements ActionListener, GameObserver {
     Gameboard gameboard = Gameboard.getInstance();
     private final Font smallFont = gameboard.getSmallFont();
     private final int SCREEN_SIZE = gameboard.getScreenSize();
@@ -79,7 +79,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     private int pelletEatenCount = 0;
 
 
-    public Model() {
+    public Facade() {
         loadImages();
         initVariables();
         addKeyListener(new TAdapter());
@@ -353,7 +353,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         }
     }
 
-    public void initGame() {
+    public void startGame() {
         GAMES_PLAYED = 0;
         pacman.setLives(3);
         scoringSystem.notifyObservers(new GameEvent(GameEvent.EventType.RESET));
@@ -473,7 +473,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
             } else {
                 if (key == KeyEvent.VK_SPACE) {
                     inGame = true;
-                    initGame();
+                    startGame();
                 }
             }
         }

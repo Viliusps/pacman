@@ -1,14 +1,14 @@
 package pacman;
 
-import pacman.classes.Facade.GameFacade;
+import pacman.classes.Facade.Facade;
 
 import javax.swing.*;
 
 public class Client extends JFrame{
-	private GameFacade gameFacade;
+	private Facade facade;
 	public Client() {
-		gameFacade = new GameFacade();
-		add(gameFacade.getModel());
+		facade = new Facade();
+		add(facade);
 		setTitle("Pacman");
 		setSize(380, 420);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
@@ -16,19 +16,15 @@ public class Client extends JFrame{
 	}
 
 	public void play() {
-		gameFacade.startGame();
+		facade.startGame();
 		setVisible(true);
 	}
-
-
 	
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(() -> {
 			Client pac = new Client();
 			pac.play();
 		});
-
-
 	}
 
 }
