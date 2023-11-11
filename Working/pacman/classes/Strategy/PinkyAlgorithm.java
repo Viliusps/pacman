@@ -11,8 +11,8 @@ public class PinkyAlgorithm extends MoveAlgorithm{
     //tries to ambush Pac
     @Override
     public void execute(Ghost ghost, Pacman pac, short[] screenData, int pos, List<Ghost> ghosts) {
-        int targetX = pac.getX() + pac.getDX() * 4;
-        int targetY = pac.getY() + pac.getDY() * 4;
+        int targetX = pac.getX() + pac.getDX() * 4 * 24;
+        int targetY = pac.getY() + pac.getDY() * 4 * 24;
 
         int distanceX = targetX - ghost.getX();
         int distanceY = targetY - ghost.getY();
