@@ -15,8 +15,8 @@ public class InkyAlgorithm extends MoveAlgorithm {
     //reference based chasing algorithm
     @Override
     public void execute(Ghost ghost, Pacman pac, short[] screenData, int pos, List<Ghost> ghosts) {
-        int referenceX = pac.getX() + pac.getDX() * 2;
-        int referenceY = pac.getY() + pac.getDY() * 2;
+        int referenceX = pac.getX() + pac.getDX() * 2 * 24;
+        int referenceY = pac.getY() + pac.getDY() * 2 * 24;
         int blinkyX = 0, blinkyY = 0;
         for (int i = 0; i < ghosts.size(); i++) {
             if (ghosts.get(i) instanceof Blinky) {
