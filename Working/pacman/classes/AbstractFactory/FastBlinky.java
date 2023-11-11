@@ -2,6 +2,7 @@ package pacman.classes.AbstractFactory;
 
 import pacman.classes.Blinky;
 import pacman.classes.Prototype.Prototype;
+import pacman.classes.Strategy.BlinkyAlgorithm;
 
 public class FastBlinky extends Blinky {
     @Override
@@ -14,7 +15,7 @@ public class FastBlinky extends Blinky {
         ghost.setSpeed(this.getSpeed());
         ghost.setColor(this.getColor());
         ghost.setFrightened(this.getFrightened());
-        ghost.setStrategy(this.getStrategy());
+        ghost.setStrategy(new BlinkyAlgorithm());
         return ghost;
     }
 

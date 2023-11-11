@@ -2,6 +2,7 @@ package pacman.classes.AbstractFactory;
 
 import pacman.classes.Clyde;
 import pacman.classes.Prototype.Prototype;
+import pacman.classes.Strategy.ClydeAlgorithm;
 
 public class FastClyde extends Clyde {
     @Override
@@ -14,7 +15,7 @@ public class FastClyde extends Clyde {
         ghost.setSpeed(this.getSpeed());
         ghost.setColor(this.getColor());
         ghost.setFrightened(this.getFrightened());
-        ghost.setStrategy(this.getStrategy());
+        ghost.setStrategy(new ClydeAlgorithm());
         return ghost;
     }
 

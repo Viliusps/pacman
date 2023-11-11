@@ -2,6 +2,7 @@ package pacman.classes.AbstractFactory;
 
 import pacman.classes.Inky;
 import pacman.classes.Prototype.Prototype;
+import pacman.classes.Strategy.InkyAlgorithm;
 
 public class SlowInky extends Inky {
     @Override
@@ -14,7 +15,7 @@ public class SlowInky extends Inky {
         ghost.setSpeed(this.getSpeed());
         ghost.setColor(this.getColor());
         ghost.setFrightened(this.getFrightened());
-        ghost.setStrategy(this.getStrategy());
+        ghost.setStrategy(new InkyAlgorithm());
         return ghost;
     }
 

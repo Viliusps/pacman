@@ -376,6 +376,21 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         for (int i = 0; i < GAMES_PLAYED; i++) {
             ghost = ghosts.get(rnd.nextInt(0, ghosts.size()));
             ghosts.add(ghost.deepClone());
+            //Pridėti switch random
+            Ghost shallowCopy = ghost.clone();
+            Ghost deepCopy = ghost.deepClone();
+//            System.out.println("Originalus vaiduoklis");
+//            System.out.println("Objekto atminties adresas: " + System.identityHashCode(ghost));
+//            System.out.println("Strategy objekto atminties adresas: "+ System.identityHashCode(ghost.getStrategy()));
+//            System.out.println();
+//            System.out.println("Paviršutinės kopijos vaiduoklis");
+//            System.out.println("Objekto atminties adresas: " + System.identityHashCode(shallowCopy));
+//            System.out.println("Strategy objekto atminties adresas: " + System.identityHashCode(shallowCopy.getStrategy()));
+//            System.out.println();
+//            System.out.println("Giliosios kopijos vaiduoklis");
+//            System.out.println("Objekto atminties adresas: "+ System.identityHashCode(deepCopy));
+//            System.out.println("Strategy objekto atminties adresas: "+ System.identityHashCode(deepCopy.getStrategy()));
+//            System.out.println();
         }
         N_GHOSTS = ghosts.size();
         int i;

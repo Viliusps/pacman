@@ -2,6 +2,7 @@ package pacman.classes.AbstractFactory;
 
 import pacman.classes.Pinky;
 import pacman.classes.Prototype.Prototype;
+import pacman.classes.Strategy.PinkyAlgorithm;
 
 public class SlowPinky extends Pinky {
     @Override
@@ -14,7 +15,7 @@ public class SlowPinky extends Pinky {
         ghost.setSpeed(this.getSpeed());
         ghost.setColor(this.getColor());
         ghost.setFrightened(this.getFrightened());
-        ghost.setStrategy(this.getStrategy());
+        ghost.setStrategy(new PinkyAlgorithm());
         return ghost;
     }
 }
