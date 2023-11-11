@@ -37,8 +37,8 @@ public class InkyConfigurator {
 		return this;
 	}
 
-	public InkyConfigurator addColor(Image color) {
-		this.inky.setColor(color);
+	public InkyConfigurator addColor() {
+		this.inky.setColor();
 		return this;
 	}
 

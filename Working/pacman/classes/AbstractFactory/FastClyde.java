@@ -1,19 +1,24 @@
 package pacman.classes.AbstractFactory;
 
+import pacman.classes.Bridge.IColor;
 import pacman.classes.Clyde;
 import pacman.classes.Prototype.Prototype;
 import pacman.classes.Strategy.ClydeAlgorithm;
 
 public class FastClyde extends Clyde {
+    public FastClyde(IColor color) {
+        super(color);
+    }
+
     @Override
     public FastClyde deepClone() {
-        FastClyde ghost = new FastClyde();
+        FastClyde ghost = new FastClyde(this.getImageColor());
         ghost.setX(this.getX());
         ghost.setY(this.getY());
         ghost.setDx(this.getDx());
         ghost.setDy(this.getDy());
         ghost.setSpeed(this.getSpeed());
-        ghost.setColor(this.getColor());
+        ghost.setColor();
         ghost.setFrightened(this.getFrightened());
         ghost.setStrategy(new ClydeAlgorithm());
         return ghost;

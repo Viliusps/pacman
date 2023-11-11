@@ -1,4 +1,4 @@
-package pacman;
+package pacman.classes.Facade;
 
 import pacman.classes.AbstractFactory.FastFactory;
 import pacman.classes.AbstractFactory.SlowFactory;
@@ -72,27 +72,27 @@ public class Model extends JPanel implements ActionListener, GameObserver {
 
     private Invoker invoker = new Invoker();
 
-    private final GameSubject scoringSystem = new GameEventSystem();
+    private GameSubject scoringSystem = new GameEventSystem();
 
     private Timer timer;
 
     private int pelletEatenCount = 0;
 
 
-    public Model() {
+    public Model(KeyAdapter adapter) {
         loadImages();
         initVariables();
-        addKeyListener(new TAdapter());
+        addKeyListener(adapter);
         setFocusable(true);
-        initGame();
     }
 
-    private void loadImages() {
+
+    public void loadImages() {
         heart = new ImageIcon("./Working/images/heart.png").getImage();
         powerUp = new ImageIcon("./Working/images/powerUp.gif").getImage();
         frightened = new ImageIcon("./Working/images/frightened.gif").getImage();
     }
-    private void initVariables() {
+    public void initVariables() {
         screenData = new short[N_BLOCKS * N_BLOCKS];
         d = new Dimension(400, 400);
         pacman = new Pacman();
@@ -353,7 +353,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         }
     }
 
-    private void initGame() {
+    public void initializeGame() {
         GAMES_PLAYED = 0;
         pacman.setLives(3);
         scoringSystem.notifyObservers(new GameEvent(GameEvent.EventType.RESET));
@@ -361,15 +361,32 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         N_GHOSTS = ghosts.size();
     }
 
-    private void initLevel() {
+    public Pacman getPacman() {
+    	return this.pacman;
+    }
+
+
+    public GameSubject getScoringSystem() {
+    	return this.scoringSystem;
+    }
+
+    public void setPacmanLives(int lives) {
+    	this.pacman.setLives(lives);
+    }
+    public void setScoringSystem(GameSubject scoringSystem) {
+        this.scoringSystem = scoringSystem;
+    }
+
+
+    public void initLevel() {
         ghosts = new ArrayList<>();
         Ghost ghost = slowFactory.getBlinky();
         ghosts.add(ghost);
         ghost = fastFactory.getClyde();
         ghosts.add(ghost);
-        ghost = fastFactory.getInky();
+        ghost = slowFactory.getInky();
         ghosts.add(ghost);
-        ghost = slowFactory.getPinky();
+        ghost = fastFactory.getPinky();
         ghosts.add(ghost);
         pelletEatenCount = 0;
         Random rnd = new Random();
@@ -462,30 +479,25 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         }
     }
 
+
     //controls
-    class TAdapter extends KeyAdapter {
-        @Override
-        public void keyPressed(KeyEvent e) {
-
-            int key = e.getKeyCode();
-
-            if (inGame) {
-                if (key == KeyEvent.VK_LEFT) {
-                    invoker.setCommand(new LeftMove());
-                } else if (key == KeyEvent.VK_RIGHT) {
-                    invoker.setCommand(new RightMove());
-                } else if (key == KeyEvent.VK_UP) {
-                    invoker.setCommand(new UpMove());
-                } else if (key == KeyEvent.VK_DOWN) {
-                    invoker.setCommand(new DownMove());
-                } else if (key == KeyEvent.VK_ESCAPE && timer.isRunning()) {
-                    inGame = false;
-                } 
-            } else {
-                if (key == KeyEvent.VK_SPACE) {
-                    inGame = true;
-                    initGame();
-                }
+    public void handleInput(int key) {
+        if (inGame) {
+            if (key == KeyEvent.VK_LEFT) {
+                this.invoker.setCommand(new LeftMove());
+            } else if (key == KeyEvent.VK_RIGHT) {
+                this.invoker.setCommand(new RightMove());
+            } else if (key == KeyEvent.VK_UP) {
+                this.invoker.setCommand(new UpMove());
+            } else if (key == KeyEvent.VK_DOWN) {
+                this.invoker.setCommand(new DownMove());
+            } else if (key == KeyEvent.VK_ESCAPE && this.timer.isRunning()) {
+                this.inGame = false;
+            }
+        } else {
+            if (key == KeyEvent.VK_SPACE) {
+                this.inGame = true;
+                initializeGame();
             }
         }
     }
@@ -494,4 +506,5 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     public void actionPerformed(ActionEvent e) {
         repaint();
     }
+
 }

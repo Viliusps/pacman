@@ -1,20 +1,30 @@
 package pacman;
 
-import javax.swing.JFrame;
+import pacman.classes.Facade.Facade;
+
+import javax.swing.*;
 
 public class Client extends JFrame{
+	private Facade facade;
 	public Client() {
-		add(new Model());
+		facade = new Facade(3);
+		add(facade.getModel());
+		setTitle("Pacman");
+		setSize(380, 420);
+		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
+	}
+
+	public void play() {
+		facade.startGame();
+		setVisible(true);
 	}
 	
 	public static void main(String[] args) {
-		Client pac = new Client();
-		pac.setVisible(true);
-		pac.setTitle("Pacman");
-		pac.setSize(380,420);
-		pac.setDefaultCloseOperation(EXIT_ON_CLOSE);
-		pac.setLocationRelativeTo(null);
-		
+		SwingUtilities.invokeLater(() -> {
+			Client pac = new Client();
+			pac.play();
+		});
 	}
 
 }

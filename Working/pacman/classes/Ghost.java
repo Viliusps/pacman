@@ -1,5 +1,6 @@
 package pacman.classes;
 
+import pacman.classes.Bridge.IColor;
 import pacman.classes.Prototype.Prototype;
 import pacman.classes.Strategy.MoveAlgorithm;
 
@@ -16,6 +17,12 @@ public class Ghost implements Prototype {
     private Boolean frightened;
 
     private MoveAlgorithm strategy;
+
+    private IColor imageColor;
+
+    public Ghost(IColor color) {
+        this.imageColor = color;
+    }
 
     public int getX() {
         return this.x;
@@ -38,7 +45,7 @@ public class Ghost implements Prototype {
     }
 
     public Image getColor() {
-        return this.color;
+        return this.imageColor.getColor();
     }
 
     public Boolean getFrightened() {
@@ -65,8 +72,8 @@ public class Ghost implements Prototype {
         this.speed = speed;
     }
 
-    public void setColor(Image color) {
-        this.color = color;
+    public void setColor() {
+        this.color = imageColor.getColor();
     }
 
     public void setFrightened(Boolean frightened) {
@@ -75,6 +82,13 @@ public class Ghost implements Prototype {
 
     public void setStrategy(MoveAlgorithm strategy) { this.strategy = strategy;}
     public MoveAlgorithm getStrategy() { return this.strategy; }
+
+    public IColor getImageColor() {
+        return this.imageColor;
+    }
+    public void setImageColor(IColor imageColor) {
+        this.imageColor = imageColor;
+    }
 
     public void move(Pacman pac, short[] screenData, int blockSize, int nBlocks, List<Ghost> ghosts) {
         if (this.x % blockSize == 0 && this.y % blockSize == 0) {
@@ -87,13 +101,13 @@ public class Ghost implements Prototype {
 
     @Override
     public Ghost deepClone() {
-        Ghost ghost = new Ghost();
+        Ghost ghost = new Ghost(this.imageColor);
         ghost.setX(this.x);
         ghost.setY(this.y);
         ghost.setDx(this.dx);
         ghost.setDy(this.dy);
         ghost.setSpeed(this.speed);
-        ghost.setColor(this.color);
+        ghost.setColor();
         ghost.setFrightened(this.frightened);
         ghost.setStrategy(this.strategy);
         return ghost;

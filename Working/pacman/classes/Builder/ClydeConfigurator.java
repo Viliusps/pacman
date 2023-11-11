@@ -37,8 +37,8 @@ public class ClydeConfigurator {
 		return this;
 	}
 
-	public ClydeConfigurator addColor(Image color) {
-		this.clyde.setColor(color);
+	public ClydeConfigurator addColor() {
+		this.clyde.setColor();
 		return this;
 	}
 
