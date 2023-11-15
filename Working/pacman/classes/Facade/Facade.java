@@ -1,7 +1,5 @@
 package pacman.classes.Facade;
 
-import pacman.classes.Observer.GameEventSystem;
-
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
@@ -10,13 +8,12 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class Facade extends JPanel implements ActionListener {
-    private Model model;
-    private GameEventSystem system;
+    private final Model model;
 
     public Facade(int pacmanLives) {
         model = new Model(new TAdapter());
         model.setPacmanLives(pacmanLives);
-        model.setScoringSystem(new GameEventSystem());
+        model.setScoringSystem(model.getScoringSystem());
     }
 
     public JPanel getModel() {
