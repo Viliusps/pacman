@@ -6,6 +6,7 @@ import pacman.classes.Adapter.AdapterInvincibility;
 import pacman.classes.Adapter.SpeedPowerUp;
 import pacman.classes.Factory.ItemFactory;
 import pacman.classes.Factory.PowerPellet;
+import pacman.classes.Iterator.GhostIterator;
 import pacman.classes.Command.*;
 import pacman.classes.Decorator.BasicFruit;
 import pacman.classes.Decorator.Fruit;
@@ -146,7 +147,9 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         }
 
         frightenedTimer = new Timer(delay, e -> {
-            for (Ghost ghost : ghosts) {
+            GhostIterator ghostIterator = new GhostIterator(ghosts);
+            while(ghostIterator.hasNext()) {
+                Ghost ghost = ghostIterator.getNext();
                 ghost.setFrightened(false);
             }
         });
@@ -178,7 +181,9 @@ public class Model extends JPanel implements ActionListener, GameObserver {
 
     private void death() {
         pacman.setLives(pacman.getLives() - 1);
-        for (Ghost ghost : ghosts) {
+        GhostIterator ghostIterator = new GhostIterator(ghosts);
+        while(ghostIterator.hasNext()) {
+            Ghost ghost = ghostIterator.getNext();
             ghost.setFrightened(Boolean.FALSE);
             ghost.setX(96);
             ghost.setY(96);
@@ -231,7 +236,9 @@ public class Model extends JPanel implements ActionListener, GameObserver {
             if ((ch & 32) != 0) {
                 screenData[pos] = (short) (ch & 15);
                 pacman.eatPowerPellet(scoringSystem);
-                for (Ghost ghost : ghosts) {
+                GhostIterator ghostIterator = new GhostIterator(ghosts);
+                while(ghostIterator.hasNext()) {
+                    Ghost ghost = ghostIterator.getNext();
                     ghost.setFrightened(true);
                 }
                 frightenedDurationCounter();
