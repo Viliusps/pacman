@@ -1,10 +1,12 @@
 package pacman.classes.Factory;
 
+import pacman.classes.TemplateMethod.AbstractItem;
+
 import java.awt.Image;
 
 import javax.swing.ImageIcon;
 
-public class PowerPellet implements Item
+public class PowerPellet extends AbstractItem implements Item
 {
     private int points;
     private Image image;
