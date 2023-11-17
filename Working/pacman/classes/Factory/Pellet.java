@@ -1,6 +1,8 @@
 package pacman.classes.Factory;
 
-public class Pellet implements Item
+import pacman.classes.TemplateMethod.AbstractItem;
+
+public class Pellet extends AbstractItem implements Item
 {
     private int points;
 
