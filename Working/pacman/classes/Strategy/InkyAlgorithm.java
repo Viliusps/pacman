@@ -3,14 +3,42 @@ package pacman.classes.Strategy;
 import pacman.classes.Blinky;
 import pacman.classes.Ghost;
 import pacman.classes.Pacman;
+import pacman.classes.TemplateMethod.AbstractAlgorithm;
 
 import java.util.List;
 
-public class InkyAlgorithm extends MoveAlgorithm {
+public class InkyAlgorithm extends AbstractAlgorithm implements MoveAlgorithm {
     public InkyAlgorithm(){
 
     }
 
+    public int getTargetX(Pacman pac, List<Ghost> ghosts) {
+        int referenceX = pac.getX() + pac.getDX() * 2 * 24;
+        int blinkyX = 0;
+        for (int i = 0; i < ghosts.size(); i++) {
+            if (ghosts.get(i) instanceof Blinky) {
+                blinkyX = ghosts.get(i).getX();
+                break;
+            }
+        }
+
+        int vectorX = referenceX - blinkyX;
+        return referenceX + vectorX;
+    }
+
+    public int getTargetY(Pacman pac, List<Ghost> ghosts) {
+        int referenceY = pac.getY() + pac.getDY() * 2 * 24;
+        int blinkyY = 0;
+        for (int i = 0; i < ghosts.size(); i++) {
+            if (ghosts.get(i) instanceof Blinky) {
+                blinkyY = ghosts.get(i).getY();
+                break;
+            }
+        }
+
+        int vectorY = referenceY - blinkyY;
+        return referenceY + vectorY;
+    }
 
     //reference based chasing algorithm
     @Override
@@ -48,7 +76,6 @@ public class InkyAlgorithm extends MoveAlgorithm {
                 ghost.setDx(1);
                 ghost.setDy(0);
                 executed = true;
-
             }
         }
         else if (Math.abs(distanceX) < Math.abs(distanceY)) {
@@ -56,14 +83,12 @@ public class InkyAlgorithm extends MoveAlgorithm {
                 ghost.setDx(0);
                 ghost.setDy(-1);
                 executed = true;
-
             }
 
             else if (distanceY > 0 && (screenData[pos] & 8) == 0 && ghost.getDy() != -1) {
                 ghost.setDx(0);
                 ghost.setDy(1);
                 executed = true;
-
             }
         }
 

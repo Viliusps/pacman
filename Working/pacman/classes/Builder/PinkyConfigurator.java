@@ -2,8 +2,7 @@ package pacman.classes.Builder;
 
 import pacman.classes.Pinky;
 import pacman.classes.Strategy.MoveAlgorithm;
-
-import java.awt.*;
+import pacman.classes.TemplateMethod.AbstractAlgorithm;
 
 public class PinkyConfigurator {
 	private final Pinky pinky;
@@ -49,6 +48,11 @@ public class PinkyConfigurator {
 
 	public PinkyConfigurator addStrategy(MoveAlgorithm strategy) {
 		this.pinky.setStrategy(strategy);
+		return this;
+	}
+
+	public PinkyConfigurator addAlgorithm(AbstractAlgorithm algorithm) {
+		this.pinky.setAlgorithm(algorithm);
 		return this;
 	}
 	

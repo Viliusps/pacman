@@ -1,5 +1,7 @@
 package pacman.classes.Facade;
 
+import pacman.Model;
+
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;

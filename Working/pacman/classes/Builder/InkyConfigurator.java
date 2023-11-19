@@ -2,8 +2,7 @@ package pacman.classes.Builder;
 
 import pacman.classes.Inky;
 import pacman.classes.Strategy.MoveAlgorithm;
-
-import java.awt.*;
+import pacman.classes.TemplateMethod.AbstractAlgorithm;
 
 public class InkyConfigurator {
 	private final Inky inky;
@@ -49,6 +48,11 @@ public class InkyConfigurator {
 
 	public InkyConfigurator addStrategy(MoveAlgorithm strategy) {
 		this.inky.setStrategy(strategy);
+		return this;
+	}
+
+	public InkyConfigurator addAlgorithm(AbstractAlgorithm algorithm) {
+		this.inky.setAlgorithm(algorithm);
 		return this;
 	}
 	

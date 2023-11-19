@@ -2,8 +2,7 @@ package pacman.classes.Builder;
 
 import pacman.classes.Clyde;
 import pacman.classes.Strategy.MoveAlgorithm;
-
-import java.awt.*;
+import pacman.classes.TemplateMethod.AbstractAlgorithm;
 
 public class ClydeConfigurator {
 	private final Clyde clyde;
@@ -49,6 +48,11 @@ public class ClydeConfigurator {
 
 	public ClydeConfigurator addStrategy(MoveAlgorithm strategy) {
 		this.clyde.setStrategy(strategy);
+		return this;
+	}
+
+	public ClydeConfigurator addAlgorithm(AbstractAlgorithm algorithm) {
+		this.clyde.setAlgorithm(algorithm);
 		return this;
 	}
 	

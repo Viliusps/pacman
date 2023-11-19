@@ -2,11 +2,20 @@ package pacman.classes.Strategy;
 
 import pacman.classes.Ghost;
 import pacman.classes.Pacman;
+import pacman.classes.TemplateMethod.AbstractAlgorithm;
 
 import java.util.List;
 
-public class PinkyAlgorithm extends MoveAlgorithm{
+public class PinkyAlgorithm extends AbstractAlgorithm implements MoveAlgorithm{
     public PinkyAlgorithm(){}
+
+    public int getTargetX(Pacman pac, List<Ghost> ghosts) {
+        return pac.getX() + pac.getDX() * 4 * 24;
+    }
+
+    public int getTargetY(Pacman pac, List<Ghost> ghosts) {
+        return pac.getY() + pac.getDY() * 4 * 24;
+    }
 
     //tries to ambush Pac
     @Override
@@ -30,7 +39,6 @@ public class PinkyAlgorithm extends MoveAlgorithm{
                 ghost.setDx(1);
                 ghost.setDy(0);
                 executed = true;
-
             }
         }
         else if (Math.abs(distanceX) < Math.abs(distanceY)) {
@@ -38,14 +46,12 @@ public class PinkyAlgorithm extends MoveAlgorithm{
                 ghost.setDx(0);
                 ghost.setDy(-1);
                 executed = true;
-
             }
 
             else if (distanceY > 0 && (screenData[pos] & 8) == 0 && ghost.getDy() != -1) {
                 ghost.setDx(0);
                 ghost.setDy(1);
                 executed = true;
-
             }
         }
 

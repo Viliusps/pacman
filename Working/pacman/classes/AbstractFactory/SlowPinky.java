@@ -18,6 +18,7 @@ public class SlowPinky extends Pinky {
         ghost.setColor();
         ghost.setFrightened(this.getFrightened());
         ghost.setStrategy(this.getStrategy());
+        ghost.setAlgorithm(this.getAlgorithm());
         return ghost;
     }
 }

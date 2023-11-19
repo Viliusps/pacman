@@ -1,62 +1,49 @@
-package pacman.classes.Strategy;
+package pacman.classes.TemplateMethod;
 
 import pacman.classes.Ghost;
 import pacman.classes.Pacman;
-import pacman.classes.TemplateMethod.AbstractAlgorithm;
 
 import java.util.List;
 
-public class ClydeAlgorithm extends AbstractAlgorithm implements MoveAlgorithm {
+public abstract class AbstractAlgorithm {
+    public abstract int getTargetX(Pacman pac, List<Ghost> ghosts);
+    public abstract int getTargetY(Pacman pac, List<Ghost> ghosts);
 
-    public ClydeAlgorithm(){
-        
-    }
-
-    public int getTargetX(Pacman pac, List<Ghost> ghosts) {
-        return pac.getX();
-    }
-
-    public int getTargetY(Pacman pac, List<Ghost> ghosts) {
-        return pac.getY();
-    }
-
-    @Override
     public boolean checkDistance(int distanceX, int distanceY) {
-        int minimumDistance = Math.min(Math.abs(distanceX), Math.abs(distanceY));
-        return minimumDistance > 8 * 24;
+        return true;
     }
 
-    @Override
-    public void execute(Ghost ghost, Pacman pac, short[] screenData, int pos, List<Ghost> ghosts) {
-        int targetX = pac.getX();
-        int targetY = pac.getY();
-
-        int distanceX = targetX - ghost.getX();
-        int distanceY = targetY - ghost.getY();
-
+    public final void executeAlgorithm(Ghost ghost, Pacman pac, short[] screenData, int pos, List<Ghost> ghosts) {
+        int distanceX = getTargetX(pac, ghosts) - ghost.getX();
+        int distanceY = getTargetY(pac, ghosts) - ghost.getY();
         boolean executed = false;
-
-        int minimumDistance = Math.min(Math.abs(distanceX), Math.abs(distanceY));
-        if(minimumDistance > 8 * 24) {
+        if (checkDistance(distanceX, distanceY)) {
             if (Math.abs(distanceX) > Math.abs(distanceY)) {
                 if (distanceX < 0 && (screenData[pos] & 1) == 0 && ghost.getDx() != 1) {
                     ghost.setDx(-1);
                     ghost.setDy(0);
                     executed = true;
-                } else if (distanceX > 0 && (screenData[pos] & 4) == 0 && ghost.getDx() != -1) {
+                }
+                else if (distanceX > 0 && (screenData[pos] & 4) == 0 && ghost.getDx() != -1)
+                {
                     ghost.setDx(1);
                     ghost.setDy(0);
                     executed = true;
                 }
-            } else if (Math.abs(distanceX) < Math.abs(distanceY)) {
+            }
+            else if (Math.abs(distanceX) < Math.abs(distanceY)) {
                 if (distanceY < 0 && (screenData[pos] & 2) == 0 && ghost.getDy() != 1) {
                     ghost.setDx(0);
                     ghost.setDy(-1);
                     executed = true;
-                } else if (distanceY > 0 && (screenData[pos] & 8) == 0 && ghost.getDy() != -1) {
+
+                }
+
+                else if (distanceY > 0 && (screenData[pos] & 8) == 0 && ghost.getDy() != -1) {
                     ghost.setDx(0);
                     ghost.setDy(1);
                     executed = true;
+
                 }
             }
         }
@@ -107,5 +94,5 @@ public class ClydeAlgorithm extends AbstractAlgorithm implements MoveAlgorithm {
             }
         }
     }
-    
+
 }
