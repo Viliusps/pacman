@@ -19,6 +19,7 @@ public class FastClyde extends Clyde {
         ghost.setColor();
         ghost.setFrightened(this.getFrightened());
         ghost.setStrategy(this.getStrategy());
+        ghost.setAlgorithm(this.getAlgorithm());
         return ghost;
     }
 

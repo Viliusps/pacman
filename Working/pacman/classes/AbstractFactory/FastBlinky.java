@@ -20,6 +20,7 @@ public class FastBlinky extends Blinky {
         ghost.setColor();
         ghost.setFrightened(this.getFrightened());
         ghost.setStrategy(this.getStrategy());
+        ghost.setAlgorithm(this.getAlgorithm());
         return ghost;
     }
 

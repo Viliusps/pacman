@@ -13,10 +13,10 @@ public class ClydeBuilder {
 	private final Image orangeColor = new ImageIcon("./Working/images/orange.gif").getImage();
 
 	public Clyde startFastClyde() {
-		return new ClydeConfigurator(new FastClyde(new OrangeColor())).addX(96).addY(96).addDx(1).addDy(0).addSpeed(4).addColor().addFrightened(Boolean.FALSE).addStrategy(new ClydeAlgorithm()).build();
+		return new ClydeConfigurator(new FastClyde(new OrangeColor())).addX(96).addY(96).addDx(1).addDy(0).addSpeed(4).addColor().addFrightened(Boolean.FALSE).addStrategy(new ClydeAlgorithm()).addAlgorithm(new ClydeAlgorithm()).build();
 	}
 	
 	public Clyde startSlowClyde() {
-		return new ClydeConfigurator(new SlowClyde(new OrangeColor())).addX(96).addY(96).addDx(1).addDy(0).addSpeed(2).addColor().addFrightened(Boolean.FALSE).addStrategy(new ClydeAlgorithm()).build();
+		return new ClydeConfigurator(new SlowClyde(new OrangeColor())).addX(96).addY(96).addDx(1).addDy(0).addSpeed(2).addColor().addFrightened(Boolean.FALSE).addStrategy(new ClydeAlgorithm()).addAlgorithm(new ClydeAlgorithm()).build();
 	}
 }

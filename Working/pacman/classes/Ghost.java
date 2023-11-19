@@ -3,6 +3,7 @@ package pacman.classes;
 import pacman.classes.Bridge.IColor;
 import pacman.classes.Prototype.Prototype;
 import pacman.classes.Strategy.MoveAlgorithm;
+import pacman.classes.TemplateMethod.AbstractAlgorithm;
 
 import java.awt.*;
 import java.util.List;
@@ -17,6 +18,8 @@ public class Ghost implements Prototype {
     private Boolean frightened;
 
     private MoveAlgorithm strategy;
+
+    private AbstractAlgorithm algorithm;
 
     private IColor imageColor;
 
@@ -81,7 +84,10 @@ public class Ghost implements Prototype {
     }
 
     public void setStrategy(MoveAlgorithm strategy) { this.strategy = strategy;}
+    public void setAlgorithm(AbstractAlgorithm algorithm) { this.algorithm = algorithm;}
+
     public MoveAlgorithm getStrategy() { return this.strategy; }
+    public AbstractAlgorithm getAlgorithm() { return this.algorithm; }
 
     public IColor getImageColor() {
         return this.imageColor;
@@ -93,7 +99,8 @@ public class Ghost implements Prototype {
     public void move(Pacman pac, short[] screenData, int blockSize, int nBlocks, List<Ghost> ghosts) {
         if (this.x % blockSize == 0 && this.y % blockSize == 0) {
             int pos = this.x / blockSize + nBlocks * (this.y / blockSize);
-            this.strategy.execute(this, pac, screenData, pos, ghosts);
+            this.algorithm.executeAlgorithm(this, pac, screenData, pos, ghosts);
+            //this.strategy.execute(this, pac, screenData, pos, ghosts);
         }
         this.x = (this.x + this.dx * this.speed);
         this.y = (this.y + this.dy * this.speed);

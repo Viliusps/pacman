@@ -2,8 +2,7 @@ package pacman.classes.Builder;
 
 import pacman.classes.Blinky;
 import pacman.classes.Strategy.MoveAlgorithm;
-
-import java.awt.*;
+import pacman.classes.TemplateMethod.AbstractAlgorithm;
 
 public class BlinkyConfigurator {
 	private final Blinky blinky;
@@ -49,6 +48,11 @@ public class BlinkyConfigurator {
 
 	public BlinkyConfigurator addStrategy(MoveAlgorithm strategy) {
 		this.blinky.setStrategy(strategy);
+		return this;
+	}
+
+	public BlinkyConfigurator addAlgorithm(AbstractAlgorithm algorithm) {
+		this.blinky.setAlgorithm(algorithm);
 		return this;
 	}
 	

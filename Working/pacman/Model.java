@@ -1,4 +1,4 @@
-package pacman.classes.Facade;
+package pacman;
 
 import pacman.classes.AbstractFactory.FastFactory;
 import pacman.classes.AbstractFactory.SlowFactory;

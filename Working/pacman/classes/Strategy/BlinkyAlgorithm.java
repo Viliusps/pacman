@@ -2,24 +2,28 @@ package pacman.classes.Strategy;
 
 import pacman.classes.Ghost;
 import pacman.classes.Pacman;
+import pacman.classes.TemplateMethod.AbstractAlgorithm;
 
 import java.util.List;
 
-public class BlinkyAlgorithm extends MoveAlgorithm {
+public class BlinkyAlgorithm extends AbstractAlgorithm implements MoveAlgorithm {
 
     public BlinkyAlgorithm(){}
 
-    //Directly chases Pac
-    @Override
+    public int getTargetX(Pacman pac, List<Ghost> ghosts) {
+        return pac.getX();
+    }
+
+    public int getTargetY(Pacman pac, List<Ghost> ghosts) {
+        return pac.getY();
+    }
+
     public void execute(Ghost ghost, Pacman pac, short[] screenData, int pos, List<Ghost> ghosts) {
         int targetX = pac.getX();
         int targetY = pac.getY();
 
-        int ghostX = ghost.getX();
-        int ghostY = ghost.getY();
-
-        int distanceX = targetX - ghostX;
-        int distanceY = targetY - ghostY;
+        int distanceX = targetX - ghost.getX();
+        int distanceY = targetY - ghost.getY();
 
         boolean executed = false;
 
@@ -34,7 +38,6 @@ public class BlinkyAlgorithm extends MoveAlgorithm {
                 ghost.setDx(1);
                 ghost.setDy(0);
                 executed = true;
-
             }
         }
         else if (Math.abs(distanceX) < Math.abs(distanceY)) {
@@ -54,50 +57,50 @@ public class BlinkyAlgorithm extends MoveAlgorithm {
         }
 
         if (!executed) {
-                int count = 0;
-                int[] dx = new int[4];
-                int[] dy = new int[4];
-                if ((screenData[pos] & 1) == 0 && ghost.getDx() != 1) {
-                    dx[count] = -1;
-                    dy[count] = 0;
-                    count++;
-                }
+            int count = 0;
+            int[] dx = new int[4];
+            int[] dy = new int[4];
+            if ((screenData[pos] & 1) == 0 && ghost.getDx() != 1) {
+                dx[count] = -1;
+                dy[count] = 0;
+                count++;
+            }
 
-                if ((screenData[pos] & 2) == 0 && ghost.getDy() != 1) {
-                    dx[count] = 0;
-                    dy[count] = -1;
-                    count++;
-                }
+            if ((screenData[pos] & 2) == 0 && ghost.getDy() != 1) {
+                dx[count] = 0;
+                dy[count] = -1;
+                count++;
+            }
 
-                if ((screenData[pos] & 4) == 0 && ghost.getDx() != -1) {
-                    dx[count] = 1;
-                    dy[count] = 0;
-                    count++;
-                }
+            if ((screenData[pos] & 4) == 0 && ghost.getDx() != -1) {
+                dx[count] = 1;
+                dy[count] = 0;
+                count++;
+            }
 
-                if ((screenData[pos] & 8) == 0 && ghost.getDy() != -1) {
-                    dx[count] = 0;
-                    dy[count] = 1;
-                    count++;
-                }
-                if (count == 0) {
-                    if ((screenData[pos] & 15) == 15) {
-                        ghost.setDx(0);
-                        ghost.setDy(0);
-                    } else {
-                        ghost.setDx(-ghost.getDx());
-                        ghost.setDy(-ghost.getDy());
-                    }
-
+            if ((screenData[pos] & 8) == 0 && ghost.getDy() != -1) {
+                dx[count] = 0;
+                dy[count] = 1;
+                count++;
+            }
+            if (count == 0) {
+                if ((screenData[pos] & 15) == 15) {
+                    ghost.setDx(0);
+                    ghost.setDy(0);
                 } else {
-                    count = (int) (Math.random() * count);
-                    if (count > 3) {
-                        count = 3;
-                    }
-                    ghost.setDx(dx[count]);
-                    ghost.setDy(dy[count]);
+                    ghost.setDx(-ghost.getDx());
+                    ghost.setDy(-ghost.getDy());
                 }
+
+            } else {
+                count = (int) (Math.random() * count);
+                if (count > 3) {
+                    count = 3;
+                }
+                ghost.setDx(dx[count]);
+                ghost.setDy(dy[count]);
             }
         }
+    }
 }
 
