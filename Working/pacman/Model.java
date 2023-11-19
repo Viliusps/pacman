@@ -6,6 +6,7 @@ import pacman.classes.Adapter.AdapterInvincibility;
 import pacman.classes.Adapter.SpeedPowerUp;
 import pacman.classes.Factory.ItemFactory;
 import pacman.classes.Factory.PowerPellet;
+import pacman.classes.Iterator.ABCGhostIterator;
 import pacman.classes.Iterator.GhostIterator;
 import pacman.classes.Command.*;
 import pacman.classes.Decorator.BasicFruit;
@@ -240,6 +241,12 @@ public class Model extends JPanel implements ActionListener, GameObserver {
                 while(ghostIterator.hasNext()) {
                     Ghost ghost = ghostIterator.getNext();
                     ghost.setFrightened(true);
+                }
+
+                ABCGhostIterator ghostIterator2 = new ABCGhostIterator(ghosts);
+                while(ghostIterator2.hasNext()) {
+                    Ghost ghost = ghostIterator2.getNext();
+                    System.out.println(ghost.getClass().getSuperclass().getSimpleName());
                 }
                 frightenedDurationCounter();
             }
