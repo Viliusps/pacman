@@ -1,5 +1,6 @@
 package pacman.classes.Decorator;
 
+import java.awt.Graphics2D;
 import java.awt.Image;
 
 import javax.swing.ImageIcon;
@@ -32,5 +33,9 @@ public class BasicFruit implements Fruit, Item
 
     public void setImage(Image image) {
         this.image = image;
+    }
+
+    @Override
+    public void draw(Graphics2D g2d) {
     }
 }

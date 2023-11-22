@@ -1,5 +1,6 @@
 package pacman.classes.Factory;
 
+import java.awt.Graphics2D;
 import java.awt.Image;
 
 import javax.swing.ImageIcon;
@@ -30,5 +31,9 @@ public class PowerPellet implements Item
 
     public void setImage(Image image) {
         this.image = image;
+    }
+
+    @Override
+    public void draw(Graphics2D g2d) {
     }
 }
