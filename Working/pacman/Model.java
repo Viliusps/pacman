@@ -5,7 +5,9 @@ import pacman.classes.AbstractFactory.SlowFactory;
 import pacman.classes.Adapter.AdapterInvincibility;
 import pacman.classes.Adapter.SpeedPowerUp;
 import pacman.classes.Factory.ItemFactory;
+import pacman.classes.Factory.Pellet;
 import pacman.classes.Factory.PowerPellet;
+import pacman.classes.Flyweight.PelletFactory;
 import pacman.classes.Iterator.ABCGhostIterator;
 import pacman.classes.Iterator.GhostIterator;
 import pacman.classes.Command.*;
@@ -30,6 +32,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -47,6 +50,21 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     private final int BLOCK_SIZE = gameboard.getBlockSize();
     private final int N_BLOCKS = gameboard.getNBlocks();
 
+    static List<Color> pelletColors = new ArrayList<>(Arrays.asList(
+                Color.RED,
+                Color.GREEN,
+                Color.BLUE,
+                Color.YELLOW,
+                Color.CYAN,
+                Color.MAGENTA,
+                Color.ORANGE,
+                Color.PINK,
+                Color.GRAY,
+                Color.LIGHT_GRAY,
+                Color.DARK_GRAY,
+                Color.BLACK,
+                Color.WHITE
+        ));
 
     private final FastFactory fastFactory = new FastFactory();
     private final SlowFactory slowFactory = new SlowFactory();
@@ -355,8 +373,9 @@ public class Model extends JPanel implements ActionListener, GameObserver {
                 else if ((screenData[i] & 64) != 0) {
                     g2d.drawImage(fruit.getImage(), x - 5, y - 5, 35, 35, this);
                 }
-                else if ((screenData[i] & 16) != 0) { 
-                    g2d.setColor(new Color(255,255,255));
+                else if ((screenData[i] & 16) != 0) {
+                    Pellet pellet = PelletFactory.getItem(getRandomColor());
+                    pellet.draw(g2d);
                     g2d.fillOval(x + 10, y + 10, 6, 6);
                 }
                 else if ((screenData[i] & 128) != 0) {
@@ -423,6 +442,10 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         pacman.setDY(0);
         invoker = new Invoker();
         pacman.setDying(false);
+    }
+
+    private static Color getRandomColor() {
+        return pelletColors.get((int)(Math.random()*pelletColors.size()));
     }
 
     public void paintComponent(Graphics g) {
