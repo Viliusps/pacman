@@ -12,10 +12,11 @@ import java.awt.event.ActionListener;
 public class Facade extends JPanel implements ActionListener {
     private final Model model;
 
-    public Facade(int pacmanLives) {
+    public Facade(int pacmanLives, boolean epilepsy) {
         model = new Model(new TAdapter());
         model.setPacmanLives(pacmanLives);
         model.setScoringSystem(model.getScoringSystem());
+        model.setEpilepsy(epilepsy);
     }
 
     public JPanel getModel() {

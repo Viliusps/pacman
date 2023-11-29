@@ -374,8 +374,12 @@ public class Model extends JPanel implements ActionListener, GameObserver {
                     g2d.drawImage(fruit.getImage(), x - 5, y - 5, 35, 35, this);
                 }
                 else if ((screenData[i] & 16) != 0) {
-                    Pellet pellet = PelletFactory.getItem(getRandomColor());
-                    pellet.draw(g2d);
+                    if (epilepsy) {
+                        Pellet pellet = PelletFactory.getItem(getRandomColor());
+                        pellet.draw(g2d);
+                    } else {
+                        g2d.setColor(new Color(255,255,255));
+                    }
                     g2d.fillOval(x + 10, y + 10, 6, 6);
                 }
                 else if ((screenData[i] & 128) != 0) {
@@ -406,6 +410,13 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     public void setPacmanLives(int lives) {
     	this.pacman.setLives(lives);
     }
+
+    private boolean epilepsy;
+
+    public void setEpilepsy(boolean epilepsy) {
+        this.epilepsy = epilepsy;
+    }
+
     public void setScoringSystem(GameSubject scoringSystem) {
         this.scoringSystem = scoringSystem;
     }
