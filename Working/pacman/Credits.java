@@ -18,7 +18,7 @@ public class Credits extends JFrame implements ActionListener {
         setLocationRelativeTo(null);
 
         JTextArea creditsText = new JTextArea();
-        creditsText.setText("Credits:\n\nAugustinas Jukna\nVilius Paševeckas\nSimonas Šabanovas");
+        creditsText.setText("Credits:\n\nAugustinas Jukna\nVilius Paševeckas\nSimonas Švelnys");
         creditsText.setEditable(false);
         creditsText.setFont(new Font("Arial", Font.PLAIN, 14));
 
