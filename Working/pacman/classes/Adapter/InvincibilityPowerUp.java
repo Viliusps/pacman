@@ -11,12 +11,12 @@ public class InvincibilityPowerUp
 {
 	public void addInvincibility(Pacman pacman)
 	{
-        pacman.setInvincible();
+        pacman.setInvincible(true);
 		
         Timer speedTimer = new Timer(5 * 1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                pacman.setInvincible();
+                pacman.setInvincible(false);
                 ((Timer) e.getSource()).stop(); 
             }
         });

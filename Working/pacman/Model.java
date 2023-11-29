@@ -17,6 +17,8 @@ import pacman.classes.Decorator.GhostFrightenedDecorator;
 import pacman.classes.Ghost;
 import pacman.classes.Observer.*;
 import pacman.classes.Singleton.Gameboard;
+import pacman.classes.State.FastState;
+import pacman.classes.State.InvincibleState;
 import pacman.classes.Pacman;
 
 import java.awt.BasicStroke;
@@ -84,9 +86,6 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     private final PowerPellet powerPellet = (PowerPellet) itemFactory.getItem("PowerPellet");
     private final BasicFruit fruit = (BasicFruit) itemFactory.getItem("Fruit");
     private final Fruit ghostFrightenedFruit = new GhostFrightenedDecorator(fruit);
-
-    private final AdapterInvincibility invincibilityAdapter = new AdapterInvincibility();
-    private final SpeedPowerUp speedAdapter = new SpeedPowerUp();
 
     private Pacman pacman;
 
@@ -277,8 +276,10 @@ public class Model extends JPanel implements ActionListener, GameObserver {
                 switch (randomChoice) {
                     case 0 -> {
                         pacman.eatFruit(scoringSystem);
-                        pacman.setPowerUp(invincibilityAdapter);
-                        pacman.applyPowerUp();
+                        pacman.changeState(new InvincibleState(pacman));
+                        pacman.setSpeed();
+                        pacman.setInvincible();
+                        System.out.println("0");
                     }
                     case 1 -> pacman.eatDoublePointsFruit(scoringSystem);
                     case 2 -> {
@@ -293,8 +294,9 @@ public class Model extends JPanel implements ActionListener, GameObserver {
             }
             else if ((ch & 128) != 0) {
                 screenData[pos] = (short) (ch & 15);
-                pacman.setPowerUp(speedAdapter);
-                pacman.applyPowerUp();
+                pacman.changeState(new FastState(pacman));
+                pacman.setSpeed();
+                pacman.setInvincible();
             }
 
 

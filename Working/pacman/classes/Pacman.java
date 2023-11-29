@@ -1,13 +1,18 @@
 package pacman.classes;
 
 import java.awt.Image;
+
 import javax.swing.ImageIcon;
 
 import pacman.classes.Adapter.PowerUpAdapter;
 import pacman.classes.Observer.GameEvent;
 import pacman.classes.Observer.GameSubject;
+import pacman.classes.State.DefaultState;
+import pacman.classes.State.PacmanState;
 
 public class Pacman {
+    private PacmanState state;
+
     private int x;
     private int y;
     private int dx;
@@ -27,6 +32,7 @@ public class Pacman {
     private PowerUpAdapter powerUp;
 
     public Pacman() {
+        this.state = new DefaultState(this);
         this.speed = 3;
         this.dying = false;
         this.powerUp = null;
@@ -73,6 +79,10 @@ public class Pacman {
         return this.speed;
     }
 
+    public void setSpeed() {
+        state.setSpeed();
+    }
+
     public void setSpeed(int speed) {
         this.speed = speed;
     }
@@ -105,7 +115,11 @@ public class Pacman {
     }
 
     public void setInvincible(){
-        this.invincible = !this.invincible;
+        state.setInvincible();
+    }
+
+    public void setInvincible(boolean invincible){
+        this.invincible = invincible;
         if(!invincible){
             this.down = new ImageIcon("./Working/images/down.gif").getImage();
             this.up = new ImageIcon("./Working/images/up.gif").getImage();
@@ -159,5 +173,9 @@ public class Pacman {
 
     public void eatGhost(GameSubject subject) {
         subject.notifyObservers(new GameEvent(GameEvent.EventType.GHOST_EATEN));
+    }
+
+    public void changeState(PacmanState state) {
+        this.state = state;
     }
 }
