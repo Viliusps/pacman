@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.Timer;
 
 import pacman.classes.Pacman;
+import pacman.classes.State.DefaultState;
 
 public class InvincibilityPowerUp
 {
@@ -16,7 +17,8 @@ public class InvincibilityPowerUp
         Timer speedTimer = new Timer(5 * 1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                pacman.setInvincible(false);
+                pacman.changeState(new DefaultState(pacman));
+                pacman.setInvincible();
                 ((Timer) e.getSource()).stop(); 
             }
         });
