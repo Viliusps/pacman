@@ -6,7 +6,7 @@ import java.awt.event.*;
 import java.util.List;
 
 public class MainMenu extends JFrame implements ActionListener {
-    private List<Menu> menus;
+    private List<Menu> menus; //needs fixing
     private boolean epilepsy;
 
     public void setVisibility(boolean visibility) {
