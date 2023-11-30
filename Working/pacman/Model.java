@@ -2,13 +2,16 @@ package pacman;
 
 import pacman.classes.AbstractFactory.FastFactory;
 import pacman.classes.AbstractFactory.SlowFactory;
-import pacman.classes.Adapter.AdapterInvincibility;
-import pacman.classes.Adapter.SpeedPowerUp;
+import pacman.classes.ChainOfResponsibility.FruitHandler;
+import pacman.classes.ChainOfResponsibility.Handler;
+import pacman.classes.ChainOfResponsibility.PelletHandler;
+import pacman.classes.ChainOfResponsibility.PowerPelletHandler;
+import pacman.classes.ChainOfResponsibility.Request;
+import pacman.classes.ChainOfResponsibility.SpeedHandler;
 import pacman.classes.Factory.ItemFactory;
 import pacman.classes.Factory.Pellet;
 import pacman.classes.Factory.PowerPellet;
 import pacman.classes.Flyweight.PelletFactory;
-import pacman.classes.Iterator.ABCGhostIterator;
 import pacman.classes.Iterator.GhostIterator;
 import pacman.classes.Command.*;
 import pacman.classes.Decorator.BasicFruit;
@@ -17,8 +20,6 @@ import pacman.classes.Decorator.GhostFrightenedDecorator;
 import pacman.classes.Ghost;
 import pacman.classes.Observer.*;
 import pacman.classes.Singleton.Gameboard;
-import pacman.classes.State.FastState;
-import pacman.classes.State.InvincibleState;
 import pacman.classes.Pacman;
 
 import java.awt.BasicStroke;
@@ -87,6 +88,11 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     private final BasicFruit fruit = (BasicFruit) itemFactory.getItem("Fruit");
     private final Fruit ghostFrightenedFruit = new GhostFrightenedDecorator(fruit);
 
+    private Handler fruitHandler = new FruitHandler();
+    private Handler pelletHandler = new PelletHandler();
+    private Handler powerPelletHandler = new PowerPelletHandler();
+    private Handler speedHandler = new SpeedHandler();
+
     private Pacman pacman;
 
     private Invoker invoker = new Invoker();
@@ -112,6 +118,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         frightened = new ImageIcon("./Working/images/frightened.gif").getImage();
     }
     public void initVariables() {
+        pelletHandler = pelletHandler.setNext(powerPelletHandler.setNext(fruitHandler.setNext(speedHandler.setNext(null))));
         screenData = new short[N_BLOCKS * N_BLOCKS];
         d = new Dimension(400, 400);
         pacman = new Pacman();
@@ -153,27 +160,6 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         for (int i = 0; i < pacman.getLives(); i++) {
             g.drawImage(heart, i * 28 + 8, SCREEN_SIZE + 1, this);
         }
-    }
-
-    private Timer frightenedTimer;
-
-    private void frightenedDurationCounter() {
-        int delay = 3000;
-
-        if (frightenedTimer != null && frightenedTimer.isRunning()) {
-            frightenedTimer.stop();
-        }
-
-        frightenedTimer = new Timer(delay, e -> {
-            GhostIterator ghostIterator = new GhostIterator(ghosts);
-            while(ghostIterator.hasNext()) {
-                Ghost ghost = ghostIterator.getNext();
-                ghost.setFrightened(false);
-            }
-        });
-
-        frightenedTimer.setRepeats(false);
-        frightenedTimer.start();
     }
 
     private void checkMaze() {
@@ -251,53 +237,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
             pos = pacman.getX() / BLOCK_SIZE + N_BLOCKS * (pacman.getY() / BLOCK_SIZE);
             ch = screenData[pos];
 
-            if ((ch & 32) != 0) {
-                screenData[pos] = (short) (ch & 15);
-                pacman.eatPowerPellet(scoringSystem);
-                GhostIterator ghostIterator = new GhostIterator(ghosts);
-                while(ghostIterator.hasNext()) {
-                    Ghost ghost = ghostIterator.getNext();
-                    ghost.setFrightened(true);
-                }
-
-                ABCGhostIterator ghostIterator2 = new ABCGhostIterator(ghosts);
-                while(ghostIterator2.hasNext()) {
-                    Ghost ghost = ghostIterator2.getNext();
-                    System.out.println(ghost.getClass().getSuperclass().getSimpleName());
-                }
-                frightenedDurationCounter();
-            }
-            else if ((ch & 64) != 0) {
-                screenData[pos] = (short) (ch & 15);
-
-                Random random = new Random();
-                int randomChoice = random.nextInt(3);
-
-                switch (randomChoice) {
-                    case 0 -> {
-                        pacman.eatFruit(scoringSystem);
-                        pacman.changeState(new InvincibleState(pacman));
-                        pacman.setSpeed();
-                        pacman.setInvincible();
-                        System.out.println("0");
-                    }
-                    case 1 -> pacman.eatDoublePointsFruit(scoringSystem);
-                    case 2 -> {
-                        pacman.eatGhostFrightenedFruit(scoringSystem);
-                        ((GhostFrightenedDecorator) ghostFrightenedFruit).setGhostsFrightened(ghosts);
-                    }
-                }
-            }
-            else if ((ch & 16) != 0) {
-                screenData[pos] = (short) (ch & 15);
-                pacman.eatPellet(scoringSystem);
-            }
-            else if ((ch & 128) != 0) {
-                screenData[pos] = (short) (ch & 15);
-                pacman.changeState(new FastState(pacman));
-                pacman.setSpeed();
-                pacman.setInvincible();
-            }
+            pelletHandler.handle(new Request(ch, screenData, pacman, pos, ghosts, scoringSystem, ghostFrightenedFruit));
 
 
             if (invoker.isCommandSet()) {
