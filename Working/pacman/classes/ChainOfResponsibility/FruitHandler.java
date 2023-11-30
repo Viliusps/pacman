@@ -32,7 +32,5 @@ public class FruitHandler extends BaseHandler {
         else {
             super.getNext().handle(request);
         }
-
     }
-    
 }

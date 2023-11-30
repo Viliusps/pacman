@@ -13,6 +13,7 @@ public abstract class BaseHandler implements Handler{
     @Override
     public abstract void handle(Request request);
 
+    @Override
     public Handler getNext() {
         return this.next;
     }
