@@ -3,15 +3,14 @@ package pacman;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class SettingsMenu extends JFrame implements ActionListener {
-    private final MainMenu mainMenu;
+public class SettingsMenu extends MenuItem {
+    private final Menu mainMenu;
     private final JButton backButton;
     private static JToggleButton toggleButton;
     private static JLabel messageLabel;
 
-    public SettingsMenu(MainMenu mainMenu) {
+    public SettingsMenu(Menu mainMenu) {
         this.mainMenu = mainMenu;
         setTitle("Settings");
         setSize(300, 200);
@@ -39,8 +38,6 @@ public class SettingsMenu extends JFrame implements ActionListener {
 
         add(toggleButton);
         add(messageLabel);
-
-        setVisible(true);
     }
 
     @Override
@@ -49,5 +46,10 @@ public class SettingsMenu extends JFrame implements ActionListener {
             setVisible(false);
             mainMenu.setVisibility(true);
         }
+    }
+
+    @Override
+    public void setVisibility(boolean visible) {
+        setVisible(visible);
     }
 }
