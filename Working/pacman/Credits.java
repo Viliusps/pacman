@@ -3,13 +3,12 @@ package pacman;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
-public class Credits extends JFrame implements ActionListener {
-    private final MainMenu mainMenu;
+public class Credits extends MenuItem {
+    private final Menu mainMenu;
     private final JButton backButton;
 
-    public Credits(MainMenu mainMenu) {
+    public Credits(Menu mainMenu) {
         this.mainMenu = mainMenu;
         setTitle("Credits");
         setSize(400, 300);
@@ -29,8 +28,6 @@ public class Credits extends JFrame implements ActionListener {
         backButton = new JButton("Back");
         backButton.addActionListener(this);
         add(backButton);
-
-        setVisible(true);
     }
 
     @Override
@@ -39,5 +36,10 @@ public class Credits extends JFrame implements ActionListener {
             setVisible(false);
             mainMenu.setVisibility(true);
         }
+    }
+
+    @Override
+    public void setVisibility(boolean visible) {
+        setVisible(visible);
     }
 }
