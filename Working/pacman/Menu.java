@@ -51,7 +51,7 @@ public class Menu extends JFrame implements ActionListener {
 
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == playGameButton) {
-            new Client(epilepsy);
+            new ClientProxy().play(epilepsy);
             setVisible(false);
         } else if (e.getSource() == exitButton) {
             System.exit(0);
