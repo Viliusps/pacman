@@ -4,6 +4,7 @@ import pacman.classes.Bridge.IColor;
 import pacman.classes.Prototype.Prototype;
 import pacman.classes.Strategy.MoveAlgorithm;
 import pacman.classes.TemplateMethod.AbstractAlgorithm;
+import pacman.classes.Visitor.Visitor;
 
 import java.awt.*;
 import java.util.List;
@@ -96,7 +97,10 @@ public class Ghost implements Prototype {
         this.imageColor = imageColor;
     }
 
-    public void move(Pacman pac, short[] screenData, int blockSize, int nBlocks, List<Ghost> ghosts) {
+    public void move(Pacman pac, short[] screenData, int blockSize, int nBlocks, List<Ghost> ghosts, Visitor speedUpdater, int pelletEatenCount) {
+        if(pelletEatenCount != 0 && pelletEatenCount % 30 == 0) {
+            this.accept(speedUpdater);
+        }
         if (this.x % blockSize == 0 && this.y % blockSize == 0) {
             int pos = this.x / blockSize + nBlocks * (this.y / blockSize);
             this.algorithm.executeAlgorithm(this, pac, screenData, pos, ghosts);
@@ -128,4 +132,6 @@ public class Ghost implements Prototype {
             throw new AssertionError(e);
         }
     }
+
+    public void accept(Visitor visitor){};
 }

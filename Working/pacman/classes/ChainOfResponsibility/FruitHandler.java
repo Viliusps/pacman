@@ -20,7 +20,6 @@ public class FruitHandler extends BaseHandler {
                     request.pacman.changeState(new InvincibleState(request.pacman));
                     request.pacman.setSpeed();
                     request.pacman.setInvincible();
-                    System.out.println("0");
                 }
                 case 1 -> request.pacman.eatDoublePointsFruit(request.scoringSystem);
                 case 2 -> {

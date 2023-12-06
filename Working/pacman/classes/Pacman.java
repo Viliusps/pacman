@@ -36,7 +36,7 @@ public class Pacman {
         this.speed = 3;
         this.dying = false;
         this.powerUp = null;
-        this.invincible = false;
+        this.invincible = true;
         this.down = new ImageIcon("./Working/images/down.gif").getImage();
         this.up = new ImageIcon("./Working/images/up.gif").getImage();
     	this.left = new ImageIcon("./Working/images/left.gif").getImage();
