@@ -209,7 +209,12 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     private void moveGhosts(Graphics2D g2d) {
         for (int i = 0; i < N_GHOSTS; i++) {
             var ghost = ghosts.get(i);
-            ghost.move(pacman, screenData, BLOCK_SIZE, N_BLOCKS, ghosts, speedUpdater, pelletEatenCount);
+
+            if (pelletEatenCount != 0 && pelletEatenCount % 10 == 0) {
+                ghost.setShouldUpdateSpeed(true);
+            }
+
+            ghost.move(pacman, screenData, BLOCK_SIZE, N_BLOCKS, ghosts, speedUpdater);
 
             if (ghost.getFrightened()) {
                 drawGhost(g2d, frightened,  ghost.getX() + 1, ghost.getY() + 1);

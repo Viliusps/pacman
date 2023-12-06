@@ -24,6 +24,8 @@ public class Ghost implements Prototype {
 
     private IColor imageColor;
 
+    private Boolean shouldUpdateSpeed = false;
+
     public Ghost(IColor color) {
         this.imageColor = color;
     }
@@ -54,6 +56,10 @@ public class Ghost implements Prototype {
 
     public Boolean getFrightened() {
         return this.frightened;
+    }
+
+    public void setShouldUpdateSpeed(Boolean shouldUpdateSpeed) {
+        this.shouldUpdateSpeed = shouldUpdateSpeed;
     }
 
     public void setX(int x) {
@@ -97,11 +103,12 @@ public class Ghost implements Prototype {
         this.imageColor = imageColor;
     }
 
-    public void move(Pacman pac, short[] screenData, int blockSize, int nBlocks, List<Ghost> ghosts, Visitor speedUpdater, int pelletEatenCount) {
-        if(pelletEatenCount != 0 && pelletEatenCount % 30 == 0) {
-            this.accept(speedUpdater);
-        }
+    public void move(Pacman pac, short[] screenData, int blockSize, int nBlocks, List<Ghost> ghosts, Visitor speedUpdater) {
         if (this.x % blockSize == 0 && this.y % blockSize == 0) {
+            if (this.shouldUpdateSpeed) {
+                this.accept(speedUpdater);
+                this.shouldUpdateSpeed=false;
+            }
             int pos = this.x / blockSize + nBlocks * (this.y / blockSize);
             this.algorithm.executeAlgorithm(this, pac, screenData, pos, ghosts);
             //this.strategy.execute(this, pac, screenData, pos, ghosts);
