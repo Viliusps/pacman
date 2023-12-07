@@ -31,7 +31,6 @@ public class PowerPelletHandler extends BaseHandler {
     @Override
     public void handle(Request request) {
             if ((request.ch & 32) != 0) {
-                System.out.println("PowerPELLET");
                 request.screenData[request.pos] = (short) (request.ch & 15);
                 request.pacman.eatPowerPellet(request.scoringSystem);
                 GhostIterator ghostIterator = new GhostIterator(request.ghosts);
@@ -43,7 +42,6 @@ public class PowerPelletHandler extends BaseHandler {
                 ABCGhostIterator ghostIterator2 = new ABCGhostIterator(request.ghosts);
                 while(ghostIterator2.hasNext()) {
                     Ghost ghost = ghostIterator2.getNext();
-                    System.out.println(ghost.getClass().getSuperclass().getSimpleName());
                 }
                 frightenedDurationCounter(request);
             }

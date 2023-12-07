@@ -20,6 +20,9 @@ import pacman.classes.Decorator.GhostFrightenedDecorator;
 import pacman.classes.Ghost;
 import pacman.classes.Observer.*;
 import pacman.classes.Singleton.Gameboard;
+import pacman.classes.Visitor.InsultGenerator;
+import pacman.classes.Visitor.SpeedUpdater;
+import pacman.classes.Visitor.Visitor;
 import pacman.classes.Pacman;
 
 import java.awt.BasicStroke;
@@ -103,6 +106,9 @@ public class Model extends JPanel implements ActionListener, GameObserver {
 
     private int pelletEatenCount = 0;
 
+    private Visitor insultGenerator = new InsultGenerator();
+    private Visitor speedUpdater = new SpeedUpdater();
+
 
     public Model(KeyAdapter adapter) {
         loadImages();
@@ -117,6 +123,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         powerUp = new ImageIcon("./Working/images/powerUp.gif").getImage();
         frightened = new ImageIcon("./Working/images/frightened.gif").getImage();
     }
+
     public void initVariables() {
         pelletHandler = pelletHandler.setNext(powerPelletHandler.setNext(fruitHandler.setNext(speedHandler.setNext(null))));
         screenData = new short[N_BLOCKS * N_BLOCKS];
@@ -202,7 +209,12 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     private void moveGhosts(Graphics2D g2d) {
         for (int i = 0; i < N_GHOSTS; i++) {
             var ghost = ghosts.get(i);
-            ghost.move(pacman, screenData, BLOCK_SIZE, N_BLOCKS, ghosts);
+
+            if (pelletEatenCount != 0 && pelletEatenCount % 10 == 0) {
+                ghost.setShouldUpdateSpeed(true);
+            }
+
+            ghost.move(pacman, screenData, BLOCK_SIZE, N_BLOCKS, ghosts, speedUpdater);
 
             if (ghost.getFrightened()) {
                 drawGhost(g2d, frightened,  ghost.getX() + 1, ghost.getY() + 1);
@@ -432,6 +444,13 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         if (flag.compareAndSet(false, true)) {
             if (pelletEatenCount == 30) {
                 updateRandomPelletToPowerUp();
+            }
+            if(pelletEatenCount != 0 && pelletEatenCount % 20 == 0) {
+                GhostIterator ghostIterator = new GhostIterator(ghosts);
+                while(ghostIterator.hasNext()) {
+                    Ghost ghost = ghostIterator.getNext();
+                    ghost.accept(insultGenerator);
+                }
             }
             flag.set(false);
         }

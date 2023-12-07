@@ -4,6 +4,7 @@ import pacman.classes.Bridge.IColor;
 import pacman.classes.Prototype.Prototype;
 import pacman.classes.Strategy.MoveAlgorithm;
 import pacman.classes.TemplateMethod.AbstractAlgorithm;
+import pacman.classes.Visitor.Visitor;
 
 import java.awt.*;
 import java.util.List;
@@ -22,6 +23,8 @@ public class Ghost implements Prototype {
     private AbstractAlgorithm algorithm;
 
     private IColor imageColor;
+
+    private Boolean shouldUpdateSpeed = false;
 
     public Ghost(IColor color) {
         this.imageColor = color;
@@ -53,6 +56,10 @@ public class Ghost implements Prototype {
 
     public Boolean getFrightened() {
         return this.frightened;
+    }
+
+    public void setShouldUpdateSpeed(Boolean shouldUpdateSpeed) {
+        this.shouldUpdateSpeed = shouldUpdateSpeed;
     }
 
     public void setX(int x) {
@@ -96,8 +103,12 @@ public class Ghost implements Prototype {
         this.imageColor = imageColor;
     }
 
-    public void move(Pacman pac, short[] screenData, int blockSize, int nBlocks, List<Ghost> ghosts) {
+    public void move(Pacman pac, short[] screenData, int blockSize, int nBlocks, List<Ghost> ghosts, Visitor speedUpdater) {
         if (this.x % blockSize == 0 && this.y % blockSize == 0) {
+            if (this.shouldUpdateSpeed) {
+                this.accept(speedUpdater);
+                this.shouldUpdateSpeed=false;
+            }
             int pos = this.x / blockSize + nBlocks * (this.y / blockSize);
             this.algorithm.executeAlgorithm(this, pac, screenData, pos, ghosts);
             //this.strategy.execute(this, pac, screenData, pos, ghosts);
@@ -128,4 +139,6 @@ public class Ghost implements Prototype {
             throw new AssertionError(e);
         }
     }
+
+    public void accept(Visitor visitor){};
 }
