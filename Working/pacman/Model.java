@@ -12,6 +12,7 @@ import pacman.classes.Factory.ItemFactory;
 import pacman.classes.Factory.Pellet;
 import pacman.classes.Factory.PowerPellet;
 import pacman.classes.Flyweight.PelletFactory;
+import pacman.classes.Interpreter.PacmanCommandInterpreter;
 import pacman.classes.Iterator.GhostIterator;
 import pacman.classes.Command.*;
 import pacman.classes.Decorator.BasicFruit;
@@ -37,10 +38,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
@@ -109,6 +107,8 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     private Visitor insultGenerator = new InsultGenerator();
     private Visitor speedUpdater = new SpeedUpdater();
 
+    private final PacmanCommandInterpreter interpreter = new PacmanCommandInterpreter(this);
+
 
     public Model(KeyAdapter adapter) {
         loadImages();
@@ -131,7 +131,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         pacman = new Pacman();
         scoringSystem.addObserver(scoreboard);
         scoringSystem.addObserver(this);
-        
+        new Thread(() -> readInput()).start();
         timer = new Timer(40, this);
         timer.start();
     }
@@ -144,6 +144,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
             drawPacman(g2d);
             moveGhosts(g2d);
             checkMaze();
+
         }
     }
 
@@ -499,6 +500,17 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     @Override
     public void actionPerformed(ActionEvent e) {
         repaint();
+    }
+
+    private void readInput() {
+        Scanner scanner = new Scanner(System.in);
+
+        while(true) {
+            System.out.print("Enter a command: ");
+            String userInput = scanner.nextLine();
+            System.out.println("User entered: " + userInput);
+            this.interpreter.interpretCommand(userInput);
+        }
     }
 
 }
