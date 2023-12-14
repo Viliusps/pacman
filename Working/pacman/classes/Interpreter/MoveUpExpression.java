@@ -1,7 +1,6 @@
 package pacman.classes.Interpreter;
 
 import pacman.Model;
-import pacman.classes.Pacman;
 
 import java.awt.event.KeyEvent;
 
