@@ -47,4 +47,10 @@ public class Scoreboard implements GameObserver {
     public int getScore() {
         return this.score;
     }
+
+    public Scoreboard deepClone(){
+        Scoreboard scoreboard = new Scoreboard();
+        scoreboard.score = this.score;
+        return scoreboard;
+    }
 }
