@@ -1,6 +1,7 @@
 package pacman.classes.Facade;
 
 import pacman.Model;
+import pacman.classes.Memento.Memento;
 
 import javax.swing.*;
 import java.awt.event.KeyAdapter;
@@ -11,6 +12,7 @@ import java.awt.event.ActionListener;
 
 public class Facade extends JPanel implements ActionListener {
     private final Model model;
+    private Memento memento;
 
     public Facade(int pacmanLives, boolean epilepsy) {
         model = new Model(new TAdapter());
@@ -26,6 +28,16 @@ public class Facade extends JPanel implements ActionListener {
     public void startGame() {
         model.initializeGame();
     }
+
+    public void takeSnapshot() {
+        memento = model.saveStateToMemento();
+    }
+
+    public void restoreSnapshot() {
+        model.getStateFromMemento(memento);
+    }
+
+
 
     public void moveLeft() {
         model.handleInput(KeyEvent.VK_LEFT);

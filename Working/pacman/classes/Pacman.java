@@ -36,7 +36,7 @@ public class Pacman {
         this.speed = 3;
         this.dying = false;
         this.powerUp = null;
-        this.invincible = false;
+        this.invincible = true;//reset after
         this.down = new ImageIcon("./Working/images/down.gif").getImage();
         this.up = new ImageIcon("./Working/images/up.gif").getImage();
     	this.left = new ImageIcon("./Working/images/left.gif").getImage();
@@ -132,6 +132,20 @@ public class Pacman {
             this.left = new ImageIcon("./Working/images/leftGray.gif").getImage();
             this.right = new ImageIcon("./Working/images/rightGray.gif").getImage();
         }
+    }
+
+    public Pacman deepClone(){
+        Pacman pacman = new Pacman();
+        pacman.setX(this.x);
+        pacman.setY(this.y);
+        pacman.setDX(this.dx);
+        pacman.setDY(this.dy);
+        pacman.setSpeed(this.speed);
+        pacman.setDying(this.dying);
+        pacman.setLives(this.lives);
+        pacman.setInvincible(this.invincible);
+        pacman.setPowerUp(this.powerUp);
+        return pacman;
     }
 
     public boolean getInvincible(){

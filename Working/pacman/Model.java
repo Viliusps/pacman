@@ -19,6 +19,8 @@ import pacman.classes.Decorator.BasicFruit;
 import pacman.classes.Decorator.Fruit;
 import pacman.classes.Decorator.GhostFrightenedDecorator;
 import pacman.classes.Ghost;
+import pacman.classes.Memento.GameState;
+import pacman.classes.Memento.Memento;
 import pacman.classes.Observer.*;
 import pacman.classes.Singleton.Gameboard;
 import pacman.classes.Visitor.InsultGenerator;
@@ -50,7 +52,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     private final int SCREEN_SIZE = gameboard.getScreenSize();
     private final short[] levelData = gameboard.getLevelData();
     private short[] screenData = gameboard.getScreenData();
-    private final Scoreboard scoreboard = gameboard.getScoreboard();
+    private Scoreboard scoreboard = gameboard.getScoreboard();
     private final int BLOCK_SIZE = gameboard.getBlockSize();
     private final int N_BLOCKS = gameboard.getNBlocks();
 
@@ -109,6 +111,10 @@ public class Model extends JPanel implements ActionListener, GameObserver {
 
     private final PacmanCommandInterpreter interpreter = new PacmanCommandInterpreter(this);
 
+    private GameState state;
+
+    private Graphics2D g2d;
+
 
     public Model(KeyAdapter adapter) {
         loadImages();
@@ -125,12 +131,16 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     }
 
     public void initVariables() {
+        state = new GameState();
         pelletHandler = pelletHandler.setNext(powerPelletHandler.setNext(fruitHandler.setNext(speedHandler.setNext(null))));
         screenData = new short[N_BLOCKS * N_BLOCKS];
+        state.setScreenData(screenData);
         d = new Dimension(400, 400);
         pacman = new Pacman();
+        state.setPacman(pacman);
         scoringSystem.addObserver(scoreboard);
         scoringSystem.addObserver(this);
+        state.setScoreboard(scoreboard);
         new Thread(() -> readInput()).start();
         timer = new Timer(40, this);
         timer.start();
@@ -186,6 +196,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
 
         if (finished) {
             scoringSystem.notifyObservers(new GameEvent(GameEvent.EventType.GAME_FINISHED));
+            state.setScoreboard(scoreboard);
             GAMES_PLAYED++;
             initLevel();
         }
@@ -193,6 +204,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
 
     private void death() {
         pacman.setLives(pacman.getLives() - 1);
+        state.setPacman(pacman);
         GhostIterator ghostIterator = new GhostIterator(ghosts);
         while(ghostIterator.hasNext()) {
             Ghost ghost = ghostIterator.getNext();
@@ -200,6 +212,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
             ghost.setX(96);
             ghost.setY(96);
         }
+        state.setGhosts(ghosts);
         if (pacman.getLives() == 0) {
             inGame = false;
         }
@@ -235,6 +248,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
                 }
             }
         }
+        state.setGhosts(ghosts);
     }
 
     private void drawGhost(Graphics2D g2d, Image color, int x, int y) {
@@ -276,6 +290,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         } 
         pacman.setX(pacman.getX() + pacman.getSpeed() * pacman.getDX());
         pacman.setY(pacman.getY() + pacman.getSpeed() * pacman.getDY());
+        state.setPacman(pacman);
     }
 
     private void drawPacman(Graphics2D g2d) {
@@ -348,7 +363,9 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     public void initializeGame() {
         GAMES_PLAYED = 0;
         pacman.setLives(3);
+        state.setPacman(pacman);
         scoringSystem.notifyObservers(new GameEvent(GameEvent.EventType.RESET));
+        state.setScoreboard(scoreboard);
         initLevel();
         N_GHOSTS = ghosts.size();
     }
@@ -393,11 +410,13 @@ public class Model extends JPanel implements ActionListener, GameObserver {
             ghost = ghosts.get(rnd.nextInt(0, ghosts.size()));
             ghosts.add(ghost.deepClone());
         }
+        state.setGhosts(ghosts);
         N_GHOSTS = ghosts.size();
         int i;
         for (i = 0; i < N_BLOCKS * N_BLOCKS; i++) {
             screenData[i] = levelData[i];
         }
+        state.setScreenData(screenData);
         continueLevel();
     }
 
@@ -408,6 +427,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         pacman.setDY(0);
         invoker = new Invoker();
         pacman.setDying(false);
+        state.setPacman(pacman);
     }
 
     private static Color getRandomColor() {
@@ -452,6 +472,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
                     Ghost ghost = ghostIterator.getNext();
                     ghost.accept(insultGenerator);
                 }
+                state.setGhosts(ghosts);
             }
             flag.set(false);
         }
@@ -471,8 +492,10 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         if (validCount > 0) {
             int randomIndex = validIndices[(int) (Math.random() * validCount)];
             screenData[randomIndex] = 128;
+            state.setScreenData(screenData);
         }
     }
+
 
 
     //controls
@@ -495,6 +518,18 @@ public class Model extends JPanel implements ActionListener, GameObserver {
                 initializeGame();
             }
         }
+    }
+
+    public Memento saveStateToMemento() {
+        return new Memento(state);
+    }
+
+    public void getStateFromMemento(Memento memento) {
+        this.state = memento.getState();
+        screenData = this.state.getScreenData();
+        pacman = this.state.getPacman();
+        ghosts = this.state.getGhosts();
+        scoreboard = this.state.getScoreboard();
     }
 	
     @Override
