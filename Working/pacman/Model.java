@@ -14,6 +14,7 @@ import pacman.classes.Factory.PowerPellet;
 import pacman.classes.Flyweight.PelletFactory;
 import pacman.classes.Interpreter.PacmanCommandInterpreter;
 import pacman.classes.Iterator.GhostIterator;
+import pacman.classes.Mediator.GhostMediator;
 import pacman.classes.Command.*;
 import pacman.classes.Decorator.BasicFruit;
 import pacman.classes.Decorator.Fruit;
@@ -85,10 +86,11 @@ public class Model extends JPanel implements ActionListener, GameObserver {
 
     private Image heart, frightened;
     private Image powerUp;
+    private GhostMediator mediator = new GhostMediator();
 
     private final ItemFactory itemFactory = new ItemFactory();
-    private final PowerPellet powerPellet = (PowerPellet) itemFactory.getItem("PowerPellet");
-    private final BasicFruit fruit = (BasicFruit) itemFactory.getItem("Fruit");
+    private final PowerPellet powerPellet = (PowerPellet) itemFactory.getItem("PowerPellet", mediator);
+    private final BasicFruit fruit = (BasicFruit) itemFactory.getItem("Fruit", mediator);
     private final Fruit ghostFrightenedFruit = new GhostFrightenedDecorator(fruit);
 
     private Handler fruitHandler = new FruitHandler();
@@ -103,6 +105,7 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     private GameSubject scoringSystem = new GameEventSystem();
 
     private Timer timer;
+    private Timer timer2;
 
     private int pelletEatenCount = 0;
 
@@ -112,8 +115,6 @@ public class Model extends JPanel implements ActionListener, GameObserver {
     private final PacmanCommandInterpreter interpreter = new PacmanCommandInterpreter(this);
 
     private GameState state;
-
-    private Graphics2D g2d;
 
 
     public Model(KeyAdapter adapter) {
@@ -224,6 +225,21 @@ public class Model extends JPanel implements ActionListener, GameObserver {
         for (int i = 0; i < N_GHOSTS; i++) {
             var ghost = ghosts.get(i);
 
+            var ghostPos =  ghost.getX() / BLOCK_SIZE + N_BLOCKS * (ghost.getY() / BLOCK_SIZE);
+            //Mediator deactivate powerups
+            if((screenData[ghostPos] & 32) != 0 || (screenData[ghostPos] & 64) != 0) {
+                mediator.deactivatePowerUp();
+
+                //Wait ten seconds before reactivating
+                ActionListener taskPerformer = new ActionListener() {
+                public void actionPerformed(ActionEvent evt) {
+                    mediator.activatePowerUp();
+                }
+                };
+                timer2 = new Timer(10000, taskPerformer);
+                timer2.start();
+            }
+
             if (pelletEatenCount != 0 && pelletEatenCount % 10 == 0) {
                 ghost.setShouldUpdateSpeed(true);
             }
@@ -264,7 +280,9 @@ public class Model extends JPanel implements ActionListener, GameObserver {
             pos = pacman.getX() / BLOCK_SIZE + N_BLOCKS * (pacman.getY() / BLOCK_SIZE);
             ch = screenData[pos];
 
-            pelletHandler.handle(new Request(ch, screenData, pacman, pos, ghosts, scoringSystem, ghostFrightenedFruit));
+            
+            boolean ignorePowerup = !powerPellet.getActivated() || !fruit.getActivated();
+            pelletHandler.handle(new Request(ch, screenData, pacman, pos, ghosts, scoringSystem, ghostFrightenedFruit, ignorePowerup));
 
 
             if (invoker.isCommandSet()) {

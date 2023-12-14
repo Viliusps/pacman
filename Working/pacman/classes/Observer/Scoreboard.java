@@ -7,12 +7,13 @@ import pacman.classes.Decorator.GhostFrightenedDecorator;
 import pacman.classes.Factory.ItemFactory;
 import pacman.classes.Factory.Pellet;
 import pacman.classes.Factory.PowerPellet;
+import pacman.classes.Mediator.GhostMediator;
 
 public class Scoreboard implements GameObserver {
     private final ItemFactory itemFactory = new ItemFactory();
-    private final PowerPellet powerPellet = (PowerPellet) itemFactory.getItem("PowerPellet");
-    private final BasicFruit fruit = (BasicFruit) itemFactory.getItem("Fruit");
-    private final Pellet pellet = (Pellet) itemFactory.getItem("Pellet");
+    private final PowerPellet powerPellet = (PowerPellet) itemFactory.getItem("PowerPellet", new GhostMediator());
+    private final BasicFruit fruit = (BasicFruit) itemFactory.getItem("Fruit", new GhostMediator());
+    private final Pellet pellet = (Pellet) itemFactory.getItem("Pellet", new GhostMediator());
 
     private Fruit doublePointsFruit = new DoublePointsDecorator(fruit);
     private Fruit frightenedFruit = new GhostFrightenedDecorator(fruit);

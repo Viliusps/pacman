@@ -14,8 +14,9 @@ public class Request {
     List<Ghost> ghosts;
     GameSubject scoringSystem;
     Fruit ghostFrightenedFruit;
+    boolean ignorePowerup;
 
-    public Request(short ch, short[] screenData, Pacman pacman, int pos, List<Ghost> ghosts, GameSubject scoringSystem, Fruit ghostFrightenedFruit) {
+    public Request(short ch, short[] screenData, Pacman pacman, int pos, List<Ghost> ghosts, GameSubject scoringSystem, Fruit ghostFrightenedFruit, boolean ignorePowerup) {
         this.ch = ch;
         this.screenData = screenData;
         this.pacman = pacman;
@@ -23,5 +24,6 @@ public class Request {
         this.ghosts = ghosts;
         this.scoringSystem = scoringSystem;
         this.ghostFrightenedFruit = ghostFrightenedFruit;
+        this.ignorePowerup = ignorePowerup;
     }
 }

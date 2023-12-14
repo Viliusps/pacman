@@ -30,7 +30,7 @@ public class PowerPelletHandler extends BaseHandler {
 
     @Override
     public void handle(Request request) {
-            if ((request.ch & 32) != 0) {
+            if ((request.ch & 32) != 0 && !request.ignorePowerup) {
                 request.screenData[request.pos] = (short) (request.ch & 15);
                 request.pacman.eatPowerPellet(request.scoringSystem);
                 GhostIterator ghostIterator = new GhostIterator(request.ghosts);
