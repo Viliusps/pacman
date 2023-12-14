@@ -5,7 +5,6 @@ import pacman.classes.Facade.Facade;
 import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.sql.SQLOutput;
 
 public class Client extends JFrame implements IClient {
 	private final Facade facade;

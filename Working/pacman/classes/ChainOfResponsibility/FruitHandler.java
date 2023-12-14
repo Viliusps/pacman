@@ -8,7 +8,7 @@ public class FruitHandler extends BaseHandler {
 
     @Override
     public void handle(Request request) {
-        if ((request.ch & 64) != 0) {
+        if ((request.ch & 64) != 0  && !request.ignorePowerup) {
             request.screenData[request.pos] = (short) (request.ch & 15);
 
             Random random = new Random();

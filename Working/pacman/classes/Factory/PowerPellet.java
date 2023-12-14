@@ -5,14 +5,22 @@ import java.awt.Image;
 
 import javax.swing.ImageIcon;
 
-public class PowerPellet implements Item
+import pacman.classes.Mediator.GhostMediator;
+import pacman.classes.Mediator.PowerUpListener;
+
+public class PowerPellet implements Item, PowerUpListener
 {
     private int points;
     private Image image;
+    private boolean activated;
+    private GhostMediator mediator;
 
-    public PowerPellet(){
+    public PowerPellet(GhostMediator mediator){
         this.points = 10;
         this.image = new ImageIcon("./Working/images/powerPellet.gif").getImage();
+        this.activated = true;
+        this.mediator = mediator;
+        mediator.registerElement(this);
     }
 
     @Override
@@ -35,5 +43,20 @@ public class PowerPellet implements Item
 
     @Override
     public void draw(Graphics2D g2d) {
+    }
+
+    
+    @Override
+    public void onPowerUpActivated() {
+        this.activated = true;
+    }
+
+    @Override
+    public void onPowerUpDeactivated() {
+        this.activated = false;
+    }
+
+    public boolean getActivated() {
+        return this.activated;
     }
 }
